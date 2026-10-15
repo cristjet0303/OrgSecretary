@@ -1,0 +1,35 @@
+<div class="min-h-screen bg-slate-50 flex flex-col">
+  <!-- Top Navigation Bar -->
+  <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30">
+    <div class="flex items-center space-x-3">
+      <div class="h-9 w-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+        O
+      </div>
+      <span class="font-bold text-xl text-slate-800 tracking-tight">OrgSecretary</span>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+        Angular 21 • Tailwind v4
+      </span>
+    </div>
+  </header>
+
+  <div class="flex flex-1">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-slate-200 p-4 hidden md:block">
+      <nav class="space-y-1">
+        <a routerLink="/dashboard" routerLinkActive="bg-indigo-50 text-indigo-700 font-semibold" class="flex items-center px-3 py-2 text-sm rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+          <span class="mr-3">📊</span> Dashboard
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-6 md:p-8 overflow-y-auto">
+      <div class="max-w-7xl mx-auto">
+        <router-outlet />
+      </div>
+    </main>
+  </div>
+</div>
