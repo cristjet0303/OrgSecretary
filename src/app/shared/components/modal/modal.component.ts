@@ -10,9 +10,7 @@ import { Component, input, output } from '@angular/core';
         <div
           class="w-full max-w-lg transform overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl transition-all"
         >
-          <div
-            class="flex items-center justify-between border-b border-slate-100 px-6 py-4"
-          >
+          <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
             <h3 class="text-lg font-bold text-slate-800">{{ title() }}</h3>
             <button
               (click)="onClose()"

@@ -12,10 +12,7 @@ describe('MeetingDetailComponent', () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [MeetingDetailComponent],
-      providers: [
-        provideRouter([]),
-        { provide: LOCAL_API, useClass: WebLocalApi },
-      ],
+      providers: [provideRouter([]), { provide: LOCAL_API, useClass: WebLocalApi }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MeetingDetailComponent);

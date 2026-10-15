@@ -33,9 +33,7 @@ export class ElectronLocalApi implements LocalApi {
   getMeetingById(id: string): Promise<Meeting | null> {
     return this.api.getMeetingById(id);
   }
-  createMeeting(
-    meeting: Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<Meeting> {
+  createMeeting(meeting: Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>): Promise<Meeting> {
     return this.api.createMeeting(meeting);
   }
   updateMeeting(

@@ -1,17 +1,7 @@
 export type MeetingStatus =
-  | 'Planned'
-  | 'In Preparation'
-  | 'In Progress'
-  | 'For Review'
-  | 'Approved'
-  | 'Archived';
+  'Planned' | 'In Preparation' | 'In Progress' | 'For Review' | 'Approved' | 'Archived';
 
-export type MeetingType =
-  | 'Regular'
-  | 'Special'
-  | 'Committee'
-  | 'Board'
-  | 'General Assembly';
+export type MeetingType = 'Regular' | 'Special' | 'Committee' | 'Board' | 'General Assembly';
 
 export interface Meeting {
   id: string;

@@ -32,12 +32,14 @@
 ### Task 1: Setup Models & Electron Dependencies
 
 **Files:**
+
 - Create: `src/app/core/models/organization.model.ts`
 - Create: `src/app/core/models/meeting.model.ts`
 - Create: `src/app/core/models/database.model.ts`
 - Modify: `package.json`
 
 **Interfaces:**
+
 - Produces:
   - `Organization` interface
   - `Meeting`, `MeetingType`, `MeetingStatus` interfaces
@@ -47,6 +49,7 @@
 - [ ] **Step 1: Create domain models**
 
 Create `src/app/core/models/organization.model.ts`:
+
 ```typescript
 export interface Organization {
   id: string;
@@ -62,21 +65,12 @@ export interface Organization {
 ```
 
 Create `src/app/core/models/meeting.model.ts`:
+
 ```typescript
 export type MeetingStatus =
-  | 'Planned'
-  | 'In Preparation'
-  | 'In Progress'
-  | 'For Review'
-  | 'Approved'
-  | 'Archived';
+  'Planned' | 'In Preparation' | 'In Progress' | 'For Review' | 'Approved' | 'Archived';
 
-export type MeetingType =
-  | 'Regular'
-  | 'Special'
-  | 'Committee'
-  | 'Board'
-  | 'General Assembly';
+export type MeetingType = 'Regular' | 'Special' | 'Committee' | 'Board' | 'General Assembly';
 
 export interface Meeting {
   id: string;
@@ -103,6 +97,7 @@ export interface MeetingFilter {
 ```
 
 Create `src/app/core/models/database.model.ts`:
+
 ```typescript
 export interface DatabaseStatus {
   connected: boolean;
@@ -115,6 +110,7 @@ export interface DatabaseStatus {
 - [ ] **Step 2: Install Electron and SQLite development packages**
 
 Run:
+
 ```bash
 npm install -D electron @types/better-sqlite3 better-sqlite3 --legacy-peer-deps
 ```
@@ -122,6 +118,7 @@ npm install -D electron @types/better-sqlite3 better-sqlite3 --legacy-peer-deps
 - [ ] **Step 3: Add desktop scripts to package.json**
 
 In `package.json`, add:
+
 ```json
 "electron": "electron ./dist-desktop/main.js",
 "build:desktop": "tsc -p tsconfig.desktop.json"
@@ -144,6 +141,7 @@ git commit -m "feat(core): add domain models for organization, meetings, and dat
 ### Task 2: Dual-Target LocalApi Bridge & Core Services
 
 **Files:**
+
 - Create: `src/app/core/local-api/local-api.interface.ts`
 - Create: `src/app/core/local-api/web-local-api.service.ts`
 - Create: `src/app/core/local-api/electron-local-api.service.ts`
@@ -155,12 +153,14 @@ git commit -m "feat(core): add domain models for organization, meetings, and dat
 - Modify: `src/app/app.config.ts`
 
 **Interfaces:**
+
 - Consumes: Models from Task 1
 - Produces: `LocalApi` contract, `OrganizationService` (reactive Signals for organization), `MeetingService` (reactive Signals for meetings list and CRUD).
 
 - [ ] **Step 1: Define `LocalApi` interface and token**
 
 Create `src/app/core/local-api/local-api.interface.ts`:
+
 ```typescript
 import { Organization } from '../models/organization.model';
 import { Meeting, MeetingFilter } from '../models/meeting.model';
@@ -168,17 +168,23 @@ import { DatabaseStatus } from '../models/database.model';
 
 export interface LocalApi {
   getOrganization(): Promise<Organization | null>;
-  saveOrganization(org: Omit<Organization, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }): Promise<Organization>;
+  saveOrganization(
+    org: Omit<Organization, 'id' | 'createdAt' | 'updatedAt'> & { id?: string },
+  ): Promise<Organization>;
   getMeetings(filter?: MeetingFilter): Promise<Meeting[]>;
   getMeetingById(id: string): Promise<Meeting | null>;
   createMeeting(meeting: Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>): Promise<Meeting>;
-  updateMeeting(id: string, meeting: Partial<Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Meeting>;
+  updateMeeting(
+    id: string,
+    meeting: Partial<Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>>,
+  ): Promise<Meeting>;
   deleteMeeting(id: string): Promise<boolean>;
   getDatabaseStatus(): Promise<DatabaseStatus>;
 }
 ```
 
 Create `src/app/core/local-api/local-api.token.ts`:
+
 ```typescript
 import { InjectionToken } from '@angular/core';
 import { LocalApi } from './local-api.interface';
@@ -189,6 +195,7 @@ export const LOCAL_API = new InjectionToken<LocalApi>('LOCAL_API');
 - [ ] **Step 2: Implement `WebLocalApi` and `ElectronLocalApi`**
 
 Create `src/app/core/local-api/web-local-api.service.ts`:
+
 ```typescript
 import { Injectable } from '@angular/core';
 import { LocalApi } from './local-api.interface';
@@ -206,7 +213,9 @@ export class WebLocalApi implements LocalApi {
     return data ? JSON.parse(data) : null;
   }
 
-  async saveOrganization(org: Omit<Organization, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }): Promise<Organization> {
+  async saveOrganization(
+    org: Omit<Organization, 'id' | 'createdAt' | 'updatedAt'> & { id?: string },
+  ): Promise<Organization> {
     const existing = await this.getOrganization();
     const now = new Date().toISOString();
     const saved: Organization = {
@@ -228,18 +237,22 @@ export class WebLocalApi implements LocalApi {
     const data = localStorage.getItem(this.meetingsKey);
     let list: Meeting[] = data ? JSON.parse(data) : [];
     if (filter?.status && filter.status !== 'All') {
-      list = list.filter(m => m.status === filter.status);
+      list = list.filter((m) => m.status === filter.status);
     }
     if (filter?.searchQuery) {
       const q = filter.searchQuery.toLowerCase();
-      list = list.filter(m => m.title.toLowerCase().includes(q) || (m.chairperson && m.chairperson.toLowerCase().includes(q)));
+      list = list.filter(
+        (m) =>
+          m.title.toLowerCase().includes(q) ||
+          (m.chairperson && m.chairperson.toLowerCase().includes(q)),
+      );
     }
     return list;
   }
 
   async getMeetingById(id: string): Promise<Meeting | null> {
     const list = await this.getMeetings();
-    return list.find(m => m.id === id) || null;
+    return list.find((m) => m.id === id) || null;
   }
 
   async createMeeting(meeting: Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>): Promise<Meeting> {
@@ -256,9 +269,12 @@ export class WebLocalApi implements LocalApi {
     return created;
   }
 
-  async updateMeeting(id: string, updates: Partial<Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Meeting> {
+  async updateMeeting(
+    id: string,
+    updates: Partial<Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>>,
+  ): Promise<Meeting> {
     const list = await this.getMeetings();
-    const idx = list.findIndex(m => m.id === id);
+    const idx = list.findIndex((m) => m.id === id);
     if (idx === -1) throw new Error(`Meeting with id ${id} not found`);
     const updated: Meeting = {
       ...list[idx],
@@ -272,7 +288,7 @@ export class WebLocalApi implements LocalApi {
 
   async deleteMeeting(id: string): Promise<boolean> {
     const list = await this.getMeetings();
-    const filtered = list.filter(m => m.id !== id);
+    const filtered = list.filter((m) => m.id !== id);
     localStorage.setItem(this.meetingsKey, JSON.stringify(filtered));
     return filtered.length < list.length;
   }
@@ -289,6 +305,7 @@ export class WebLocalApi implements LocalApi {
 ```
 
 Create `src/app/core/local-api/electron-local-api.service.ts`:
+
 ```typescript
 import { Injectable } from '@angular/core';
 import { LocalApi } from './local-api.interface';
@@ -314,7 +331,9 @@ export class ElectronLocalApi implements LocalApi {
   getOrganization(): Promise<Organization | null> {
     return this.api.getOrganization();
   }
-  saveOrganization(org: Omit<Organization, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }): Promise<Organization> {
+  saveOrganization(
+    org: Omit<Organization, 'id' | 'createdAt' | 'updatedAt'> & { id?: string },
+  ): Promise<Organization> {
     return this.api.saveOrganization(org);
   }
   getMeetings(filter?: MeetingFilter): Promise<Meeting[]> {
@@ -326,7 +345,10 @@ export class ElectronLocalApi implements LocalApi {
   createMeeting(meeting: Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>): Promise<Meeting> {
     return this.api.createMeeting(meeting);
   }
-  updateMeeting(id: string, meeting: Partial<Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Meeting> {
+  updateMeeting(
+    id: string,
+    meeting: Partial<Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>>,
+  ): Promise<Meeting> {
     return this.api.updateMeeting(id, meeting);
   }
   deleteMeeting(id: string): Promise<boolean> {
@@ -341,6 +363,7 @@ export class ElectronLocalApi implements LocalApi {
 - [ ] **Step 3: Write failing tests for `OrganizationService` and `MeetingService` (RED)**
 
 Create `src/app/core/services/organization.service.spec.ts`:
+
 ```typescript
 import { TestBed } from '@angular/core/testing';
 import { OrganizationService } from './organization.service';
@@ -353,10 +376,7 @@ describe('OrganizationService', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [
-        OrganizationService,
-        { provide: LOCAL_API, useClass: WebLocalApi },
-      ],
+      providers: [OrganizationService, { provide: LOCAL_API, useClass: WebLocalApi }],
     });
     service = TestBed.inject(OrganizationService);
   });
@@ -382,6 +402,7 @@ describe('OrganizationService', () => {
 ```
 
 Create `src/app/core/services/meeting.service.spec.ts`:
+
 ```typescript
 import { TestBed } from '@angular/core/testing';
 import { MeetingService } from './meeting.service';
@@ -394,10 +415,7 @@ describe('MeetingService', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [
-        MeetingService,
-        { provide: LOCAL_API, useClass: WebLocalApi },
-      ],
+      providers: [MeetingService, { provide: LOCAL_API, useClass: WebLocalApi }],
     });
     service = TestBed.inject(MeetingService);
   });
@@ -415,9 +433,19 @@ describe('MeetingService', () => {
   });
 
   it('should filter meetings by status', async () => {
-    await service.createMeeting({ title: 'M1', meetingType: 'Regular', meetingDate: '2026-11-01', status: 'Planned' });
-    await service.createMeeting({ title: 'M2', meetingType: 'Special', meetingDate: '2026-11-02', status: 'Approved' });
-    
+    await service.createMeeting({
+      title: 'M1',
+      meetingType: 'Regular',
+      meetingDate: '2026-11-01',
+      status: 'Planned',
+    });
+    await service.createMeeting({
+      title: 'M2',
+      meetingType: 'Special',
+      meetingDate: '2026-11-02',
+      status: 'Approved',
+    });
+
     await service.loadMeetings({ status: 'Planned' });
     expect(service.meetings().length).toBe(1);
     expect(service.meetings()[0].title).toBe('M1');
@@ -433,6 +461,7 @@ Expected: FAIL (Services not implemented yet).
 - [ ] **Step 5: Implement `OrganizationService` and `MeetingService` (GREEN)**
 
 Create `src/app/core/services/organization.service.ts`:
+
 ```typescript
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { LOCAL_API } from '../local-api/local-api.token';
@@ -457,7 +486,9 @@ export class OrganizationService {
     }
   }
 
-  async saveOrganization(data: Omit<Organization, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }): Promise<Organization> {
+  async saveOrganization(
+    data: Omit<Organization, 'id' | 'createdAt' | 'updatedAt'> & { id?: string },
+  ): Promise<Organization> {
     this.isLoading.set(true);
     try {
       const saved = await this.localApi.saveOrganization(data);
@@ -471,6 +502,7 @@ export class OrganizationService {
 ```
 
 Create `src/app/core/services/meeting.service.ts`:
+
 ```typescript
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { LOCAL_API } from '../local-api/local-api.token';
@@ -486,7 +518,7 @@ export class MeetingService {
 
   upcomingMeetings = computed(() => {
     return this.meetings()
-      .filter(m => m.status === 'Planned' || m.status === 'In Preparation')
+      .filter((m) => m.status === 'Planned' || m.status === 'In Preparation')
       .sort((a, b) => a.meetingDate.localeCompare(b.meetingDate));
   });
 
@@ -527,7 +559,10 @@ export class MeetingService {
     }
   }
 
-  async updateMeeting(id: string, updates: Partial<Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Meeting> {
+  async updateMeeting(
+    id: string,
+    updates: Partial<Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>>,
+  ): Promise<Meeting> {
     this.isLoading.set(true);
     try {
       const updated = await this.localApi.updateMeeting(id, updates);
@@ -562,6 +597,7 @@ export class MeetingService {
 ```
 
 In `src/app/app.config.ts`, provide `LOCAL_API`:
+
 ```typescript
 import { LOCAL_API } from './core/local-api/local-api.token';
 import { ElectronLocalApi } from './core/local-api/electron-local-api.service';
@@ -596,6 +632,7 @@ git commit -m "feat(core): add dual-target LocalApi bridge, OrganizationService,
 ### Task 3: Electron Desktop Shell, SQLite Database & Preload Bridge
 
 **Files:**
+
 - Create: `desktop/database/schema.sql`
 - Create: `desktop/database/connection.ts`
 - Create: `desktop/database/repositories/organization.repository.ts`
@@ -606,11 +643,13 @@ git commit -m "feat(core): add dual-target LocalApi bridge, OrganizationService,
 - Create: `tsconfig.desktop.json`
 
 **Interfaces:**
+
 - Produces: Electron entrypoint with secure preload context bridge, SQLite schema initialization, and IPC handlers for organization & meetings.
 
 - [ ] **Step 1: Write SQLite schema migration file**
 
 Create `desktop/database/schema.sql`:
+
 ```sql
 PRAGMA foreign_keys = ON;
 
@@ -670,6 +709,7 @@ CREATE INDEX IF NOT EXISTS idx_meetings_status ON meetings(status);
 - [ ] **Step 2: Implement SQLite database connection and repositories**
 
 Create `desktop/database/connection.ts`:
+
 ```typescript
 import Database from 'better-sqlite3';
 import * as path from 'path';
@@ -703,6 +743,7 @@ export function getDatabase(): Database.Database {
 ```
 
 Create `desktop/database/repositories/organization.repository.ts`:
+
 ```typescript
 import { getDatabase } from '../connection';
 
@@ -731,11 +772,13 @@ export class OrganizationRepository {
     const id = org.id || existing?.id || 'org-' + Date.now();
 
     if (existing) {
-      db.prepare(`
+      db.prepare(
+        `
         UPDATE organizations
         SET name = ?, acronym = ?, address = ?, contact_details = ?, logo_path = ?, header_lines_json = ?, updated_at = ?
         WHERE id = ?
-      `).run(
+      `,
+      ).run(
         org.name,
         org.acronym || null,
         org.address || null,
@@ -743,13 +786,15 @@ export class OrganizationRepository {
         org.logoPath || null,
         JSON.stringify(org.headerLines || []),
         now,
-        id
+        id,
       );
     } else {
-      db.prepare(`
+      db.prepare(
+        `
         INSERT INTO organizations (id, name, acronym, address, contact_details, logo_path, header_lines_json, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(
+      `,
+      ).run(
         id,
         org.name,
         org.acronym || null,
@@ -758,7 +803,7 @@ export class OrganizationRepository {
         org.logoPath || null,
         JSON.stringify(org.headerLines || []),
         now,
-        now
+        now,
       );
     }
     return this.get();
@@ -767,6 +812,7 @@ export class OrganizationRepository {
 ```
 
 Create `desktop/database/repositories/meeting.repository.ts`:
+
 ```typescript
 import { getDatabase } from '../connection';
 
@@ -788,7 +834,7 @@ export class MeetingRepository {
     query += ' ORDER BY meeting_date ASC';
     const rows = db.prepare(query).all(...params) as any[];
 
-    return rows.map(r => ({
+    return rows.map((r) => ({
       id: r.id,
       title: r.title,
       meetingType: r.meeting_type,
@@ -835,10 +881,12 @@ export class MeetingRepository {
     const id = 'meeting-' + Date.now();
     const now = new Date().toISOString();
 
-    db.prepare(`
+    db.prepare(
+      `
       INSERT INTO meetings (id, title, meeting_type, meeting_number, meeting_date, start_time, end_time, venue, chairperson, secretary, purpose, status, related_meeting_id, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
+    `,
+    ).run(
       id,
       m.title,
       m.meetingType,
@@ -853,7 +901,7 @@ export class MeetingRepository {
       m.status || 'Planned',
       m.relatedMeetingId || null,
       now,
-      now
+      now,
     );
 
     return this.getById(id);
@@ -867,11 +915,13 @@ export class MeetingRepository {
     const updated = { ...existing, ...m };
     const now = new Date().toISOString();
 
-    db.prepare(`
+    db.prepare(
+      `
       UPDATE meetings
       SET title = ?, meeting_type = ?, meeting_number = ?, meeting_date = ?, start_time = ?, end_time = ?, venue = ?, chairperson = ?, secretary = ?, purpose = ?, status = ?, updated_at = ?
       WHERE id = ?
-    `).run(
+    `,
+    ).run(
       updated.title,
       updated.meetingType,
       updated.meetingNumber || null,
@@ -884,7 +934,7 @@ export class MeetingRepository {
       updated.purpose || null,
       updated.status,
       now,
-      id
+      id,
     );
 
     return this.getById(id);
@@ -901,6 +951,7 @@ export class MeetingRepository {
 - [ ] **Step 3: Register IPC Handlers and Preload Bridge**
 
 Create `desktop/ipc/handlers.ts`:
+
 ```typescript
 import { ipcMain } from 'electron';
 import { OrganizationRepository } from '../database/repositories/organization.repository';
@@ -913,11 +964,15 @@ export function registerIpcHandlers(): void {
   ipcMain.handle('localApi:getMeetings', (_, filter) => MeetingRepository.list(filter));
   ipcMain.handle('localApi:getMeetingById', (_, id) => MeetingRepository.getById(id));
   ipcMain.handle('localApi:createMeeting', (_, meeting) => MeetingRepository.create(meeting));
-  ipcMain.handle('localApi:updateMeeting', (_, id, meeting) => MeetingRepository.update(id, meeting));
+  ipcMain.handle('localApi:updateMeeting', (_, id, meeting) =>
+    MeetingRepository.update(id, meeting),
+  );
   ipcMain.handle('localApi:deleteMeeting', (_, id) => MeetingRepository.delete(id));
   ipcMain.handle('localApi:getDatabaseStatus', () => {
     const db = getDatabase();
-    const tables = db.prepare("SELECT count(*) as count FROM sqlite_master WHERE type='table'").get() as any;
+    const tables = db
+      .prepare("SELECT count(*) as count FROM sqlite_master WHERE type='table'")
+      .get() as any;
     return {
       connected: true,
       type: 'electron-sqlite',
@@ -928,6 +983,7 @@ export function registerIpcHandlers(): void {
 ```
 
 Create `desktop/preload.ts`:
+
 ```typescript
 import { contextBridge, ipcRenderer } from 'electron';
 
@@ -944,6 +1000,7 @@ contextBridge.exposeInMainWorld('localApi', {
 ```
 
 Create `desktop/main.ts`:
+
 ```typescript
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
@@ -992,6 +1049,7 @@ app.on('window-all-closed', () => {
 ```
 
 Create `tsconfig.desktop.json`:
+
 ```json
 {
   "compilerOptions": {
@@ -1024,6 +1082,7 @@ git commit -m "feat(desktop): add electron main process, secure preload bridge, 
 ### Task 4: Shared UI Primitives (CardComponent, BadgeComponent, ModalComponent)
 
 **Files:**
+
 - Create: `src/app/shared/components/badge/badge.component.ts`
 - Create: `src/app/shared/components/badge/badge.component.spec.ts`
 - Create: `src/app/shared/components/card/card.component.ts`
@@ -1032,6 +1091,7 @@ git commit -m "feat(desktop): add electron main process, secure preload bridge, 
 - Create: `src/app/shared/components/modal/modal.component.spec.ts`
 
 **Interfaces:**
+
 - Produces:
   - `BadgeComponent`: `status` input formatting color-coded badges for meeting statuses.
   - `CardComponent`: Styled container with title, subtitle, and action slots.
@@ -1040,6 +1100,7 @@ git commit -m "feat(desktop): add electron main process, secure preload bridge, 
 - [ ] **Step 1: Write failing tests for BadgeComponent, CardComponent, ModalComponent (RED)**
 
 Create `src/app/shared/components/badge/badge.component.spec.ts`:
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BadgeComponent } from './badge.component';
@@ -1070,6 +1131,7 @@ describe('BadgeComponent', () => {
 ```
 
 Create `src/app/shared/components/card/card.component.spec.ts`:
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CardComponent } from './card.component';
@@ -1094,6 +1156,7 @@ describe('CardComponent', () => {
 ```
 
 Create `src/app/shared/components/modal/modal.component.spec.ts`:
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalComponent } from './modal.component';
@@ -1126,6 +1189,7 @@ Expected: FAIL (components missing).
 - [ ] **Step 3: Implement BadgeComponent, CardComponent, and ModalComponent (GREEN)**
 
 Create `src/app/shared/components/badge/badge.component.ts`:
+
 ```typescript
 import { Component, computed, input } from '@angular/core';
 import { MeetingStatus } from '@core/models/meeting.model';
@@ -1163,19 +1227,20 @@ export class BadgeComponent {
 ```
 
 Create `src/app/shared/components/card/card.component.ts`:
+
 ```typescript
 import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-card',
   template: `
-    <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       @if (title()) {
-        <div class="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <div>
-            <h3 class="font-bold text-slate-800 text-base">{{ title() }}</h3>
+            <h3 class="text-base font-bold text-slate-800">{{ title() }}</h3>
             @if (subtitle()) {
-              <p class="text-xs text-slate-500 mt-0.5">{{ subtitle() }}</p>
+              <p class="mt-0.5 text-xs text-slate-500">{{ subtitle() }}</p>
             }
           </div>
           <ng-content select="[card-actions]" />
@@ -1194,6 +1259,7 @@ export class CardComponent {
 ```
 
 Create `src/app/shared/components/modal/modal.component.ts`:
+
 ```typescript
 import { Component, input, output } from '@angular/core';
 
@@ -1201,11 +1267,18 @@ import { Component, input, output } from '@angular/core';
   selector: 'app-modal',
   template: `
     @if (isOpen()) {
-      <div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-sm">
-        <div class="w-full max-w-lg rounded-xl bg-white shadow-xl border border-slate-200 overflow-hidden transform transition-all">
-          <div class="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+      <div
+        class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-sm"
+      >
+        <div
+          class="w-full max-w-lg transform overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl transition-all"
+        >
+          <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
             <h3 class="text-lg font-bold text-slate-800">{{ title() }}</h3>
-            <button (click)="onClose()" class="text-slate-400 hover:text-slate-600 focus:outline-none">
+            <button
+              (click)="onClose()"
+              class="text-slate-400 hover:text-slate-600 focus:outline-none"
+            >
               ✕
             </button>
           </div>
@@ -1245,6 +1318,7 @@ git commit -m "feat(shared): add BadgeComponent, CardComponent, and ModalCompone
 ### Task 5: Organization Profile Feature
 
 **Files:**
+
 - Create: `src/app/features/organization/organization.component.ts`
 - Create: `src/app/features/organization/organization.component.html`
 - Create: `src/app/features/organization/organization.component.spec.ts`
@@ -1253,12 +1327,14 @@ git commit -m "feat(shared): add BadgeComponent, CardComponent, and ModalCompone
 - Modify: `src/app/app.routes.ts`
 
 **Interfaces:**
+
 - Consumes: `OrganizationService`, `ButtonComponent`, `CardComponent`
 - Produces: `/organization` route and reactive organization management form.
 
 - [ ] **Step 1: Write failing unit test for OrganizationComponent (RED)**
 
 Create `src/app/features/organization/organization.component.spec.ts`:
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OrganizationComponent } from './organization.component';
@@ -1301,69 +1377,85 @@ Expected: FAIL (OrganizationComponent missing).
 - [ ] **Step 3: Implement OrganizationComponent and routing (GREEN)**
 
 Create `src/app/features/organization/organization.component.html`:
+
 ```html
 <div class="max-w-4xl space-y-6">
   <div>
     <h1 class="text-2xl font-bold tracking-tight text-slate-900">Organization Profile</h1>
-    <p class="mt-1 text-sm text-slate-500">Configure your organization's identity, branding, and document letterhead headers.</p>
+    <p class="mt-1 text-sm text-slate-500">
+      Configure your organization's identity, branding, and document letterhead headers.
+    </p>
   </div>
 
   @if (isSaved()) {
-    <div class="rounded-lg bg-emerald-50 border border-emerald-200 p-4 text-sm font-medium text-emerald-800">
-      ✓ Organization details successfully saved!
-    </div>
+  <div
+    class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-800"
+  >
+    ✓ Organization details successfully saved!
+  </div>
   }
 
-  <app-card title="General Information" subtitle="Used across meeting notices, minutes, and attendance sheets">
+  <app-card
+    title="General Information"
+    subtitle="Used across meeting notices, minutes, and attendance sheets"
+  >
     <form (submit)="onSubmit(); $event.preventDefault()" class="space-y-4">
       <div>
-        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Organization Name *</label>
+        <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+          >Organization Name *</label
+        >
         <input
           type="text"
           [value]="orgName()"
           (input)="orgName.set($any($event.target).value)"
           placeholder="e.g. Sangguniang Barangay Council"
           required
-          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
         />
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Acronym / Short Name</label>
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+            >Acronym / Short Name</label
+          >
           <input
             type="text"
             [value]="orgAcronym()"
             (input)="orgAcronym.set($any($event.target).value)"
             placeholder="e.g. SBC"
-            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
           />
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Contact Details</label>
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+            >Contact Details</label
+          >
           <input
             type="text"
             [value]="orgContact()"
             (input)="orgContact.set($any($event.target).value)"
             placeholder="e.g. secretary@barangay.gov.ph"
-            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
           />
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Office Address</label>
+        <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+          >Office Address</label
+        >
         <textarea
           [value]="orgAddress()"
           (input)="orgAddress.set($any($event.target).value)"
           rows="2"
           placeholder="e.g. Barangay Hall, Barangay Central, Quezon City"
-          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
         ></textarea>
       </div>
 
-      <div class="pt-4 flex justify-end">
+      <div class="flex justify-end pt-4">
         <app-button type="submit" variant="primary" [disabled]="!orgName().trim()">
           Save Organization Profile
         </app-button>
@@ -1374,6 +1466,7 @@ Create `src/app/features/organization/organization.component.html`:
 ```
 
 Create `src/app/features/organization/organization.component.ts`:
+
 ```typescript
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -1420,24 +1513,27 @@ export class OrganizationComponent implements OnInit {
 ```
 
 Create `src/app/features/organization/organization.routes.ts`:
+
 ```typescript
 import { Routes } from '@angular/router';
 
 export const ORGANIZATION_ROUTES: Routes = [
   {
     path: '',
-    loadComponent: () => import('./organization.component').then(m => m.OrganizationComponent),
+    loadComponent: () => import('./organization.component').then((m) => m.OrganizationComponent),
   },
 ];
 ```
 
 Register route in `src/app/app.routes.ts`:
+
 ```typescript
 {
   path: 'organization',
   loadChildren: () => import('@features/organization/organization.routes').then(m => m.ORGANIZATION_ROUTES),
 }
 ```
+
 And add navigation link to `src/app/layouts/main-layout/main-layout.component.html`.
 
 - [ ] **Step 4: Run tests to verify they pass (GREEN)**
@@ -1457,6 +1553,7 @@ git commit -m "feat(organization): add organization profile management and navig
 ### Task 6: Meeting Management CRUD Feature
 
 **Files:**
+
 - Create: `src/app/features/meetings/meeting-list/meeting-list.component.ts`
 - Create: `src/app/features/meetings/meeting-list/meeting-list.component.html`
 - Create: `src/app/features/meetings/meeting-list/meeting-list.component.spec.ts`
@@ -1471,12 +1568,14 @@ git commit -m "feat(organization): add organization profile management and navig
 - Modify: `src/app/app.routes.ts`
 
 **Interfaces:**
+
 - Consumes: `MeetingService`, `BadgeComponent`, `ButtonComponent`, `CardComponent`, `ModalComponent`
 - Produces: `/meetings`, `/meetings/new`, `/meetings/:id`, `/meetings/:id/edit` routes with complete CRUD workflow.
 
 - [ ] **Step 1: Write failing tests for MeetingListComponent, MeetingFormComponent, MeetingDetailComponent (RED)**
 
 Create `src/app/features/meetings/meeting-list/meeting-list.component.spec.ts`:
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -1492,10 +1591,7 @@ describe('MeetingListComponent', () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [MeetingListComponent],
-      providers: [
-        provideRouter([]),
-        { provide: LOCAL_API, useClass: WebLocalApi },
-      ],
+      providers: [provideRouter([]), { provide: LOCAL_API, useClass: WebLocalApi }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MeetingListComponent);
@@ -1510,6 +1606,7 @@ describe('MeetingListComponent', () => {
 ```
 
 Create `src/app/features/meetings/meeting-form/meeting-form.component.spec.ts`:
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -1525,10 +1622,7 @@ describe('MeetingFormComponent', () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [MeetingFormComponent],
-      providers: [
-        provideRouter([]),
-        { provide: LOCAL_API, useClass: WebLocalApi },
-      ],
+      providers: [provideRouter([]), { provide: LOCAL_API, useClass: WebLocalApi }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MeetingFormComponent);
@@ -1543,6 +1637,7 @@ describe('MeetingFormComponent', () => {
 ```
 
 Create `src/app/features/meetings/meeting-detail/meeting-detail.component.spec.ts`:
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -1558,10 +1653,7 @@ describe('MeetingDetailComponent', () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [MeetingDetailComponent],
-      providers: [
-        provideRouter([]),
-        { provide: LOCAL_API, useClass: WebLocalApi },
-      ],
+      providers: [provideRouter([]), { provide: LOCAL_API, useClass: WebLocalApi }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MeetingDetailComponent);
@@ -1583,31 +1675,32 @@ Expected: FAIL (components missing).
 - [ ] **Step 3: Implement Meeting List, Form, Detail components and routes (GREEN)**
 
 Create `src/app/features/meetings/meeting-list/meeting-list.component.html`:
+
 ```html
 <div class="space-y-6">
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div>
       <h1 class="text-2xl font-bold tracking-tight text-slate-900">Meetings & Events</h1>
       <p class="mt-1 text-sm text-slate-500">Prepare, run, and document organization sessions.</p>
     </div>
     <a routerLink="/meetings/new">
-      <app-button variant="primary">
-        + Schedule Meeting
-      </app-button>
+      <app-button variant="primary"> + Schedule Meeting </app-button>
     </a>
   </div>
 
   <!-- Filters & Search -->
-  <div class="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white p-4 rounded-xl border border-slate-200">
-    <div class="flex items-center space-x-2 overflow-x-auto w-full sm:w-auto">
+  <div
+    class="flex flex-col items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row"
+  >
+    <div class="flex w-full items-center space-x-2 overflow-x-auto sm:w-auto">
       @for (st of statusFilters; track st) {
-        <button
-          (click)="filterStatus.set(st)"
-          [class]="filterStatus() === st ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-          class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap"
-        >
-          {{ st }}
-        </button>
+      <button
+        (click)="filterStatus.set(st)"
+        [class]="filterStatus() === st ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+        class="rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors"
+      >
+        {{ st }}
+      </button>
       }
     </div>
     <div class="w-full sm:w-64">
@@ -1623,53 +1716,60 @@ Create `src/app/features/meetings/meeting-list/meeting-list.component.html`:
 
   <!-- Meetings List -->
   @if (filteredMeetings().length === 0) {
-    <div class="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-      <p class="text-sm font-semibold text-slate-700">No meetings found</p>
-      <p class="text-xs text-slate-500 mt-1">Get started by creating your first meeting session.</p>
-      <div class="mt-4">
-        <a routerLink="/meetings/new">
-          <app-button variant="primary" size="sm">+ New Meeting</app-button>
+  <div class="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+    <p class="text-sm font-semibold text-slate-700">No meetings found</p>
+    <p class="mt-1 text-xs text-slate-500">Get started by creating your first meeting session.</p>
+    <div class="mt-4">
+      <a routerLink="/meetings/new">
+        <app-button variant="primary" size="sm">+ New Meeting</app-button>
+      </a>
+    </div>
+  </div>
+  } @else {
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    @for (m of filteredMeetings(); track m.id) {
+    <div
+      class="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-slate-300"
+    >
+      <div>
+        <div class="mb-3 flex items-center justify-between">
+          <span class="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">
+            {{ m.meetingType }}
+          </span>
+          <app-badge [status]="m.status" />
+        </div>
+        <h3 class="line-clamp-1 text-lg font-bold text-slate-800">{{ m.title }}</h3>
+        <p class="mt-1 flex items-center text-xs text-slate-500">
+          📅 {{ m.meetingDate }} @if (m.startTime) { • {{ m.startTime }} }
+        </p>
+        @if (m.venue) {
+        <p class="mt-1 flex items-center text-xs text-slate-500">📍 {{ m.venue }}</p>
+        }
+      </div>
+
+      <div class="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
+        <a
+          [routerLink]="['/meetings', m.id]"
+          class="text-xs font-bold text-indigo-600 hover:text-indigo-800"
+        >
+          Open Workspace →
+        </a>
+        <a
+          [routerLink]="['/meetings', m.id, 'edit']"
+          class="text-xs text-slate-400 hover:text-slate-600"
+        >
+          Edit
         </a>
       </div>
     </div>
-  } @else {
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @for (m of filteredMeetings(); track m.id) {
-        <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:border-slate-300 transition-all">
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
-                {{ m.meetingType }}
-              </span>
-              <app-badge [status]="m.status" />
-            </div>
-            <h3 class="font-bold text-lg text-slate-800 line-clamp-1">{{ m.title }}</h3>
-            <p class="text-xs text-slate-500 mt-1 flex items-center">
-              📅 {{ m.meetingDate }} @if (m.startTime) { • {{ m.startTime }} }
-            </p>
-            @if (m.venue) {
-              <p class="text-xs text-slate-500 mt-1 flex items-center">
-                📍 {{ m.venue }}
-              </p>
-            }
-          </div>
-
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-            <a [routerLink]="['/meetings', m.id]" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">
-              Open Workspace →
-            </a>
-            <a [routerLink]="['/meetings', m.id, 'edit']" class="text-xs text-slate-400 hover:text-slate-600">
-              Edit
-            </a>
-          </div>
-        </div>
-      }
-    </div>
+    }
+  </div>
   }
 </div>
 ```
 
 Create `src/app/features/meetings/meeting-list/meeting-list.component.ts`:
+
 ```typescript
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -1704,12 +1804,12 @@ export class MeetingListComponent implements OnInit {
     let list = this.meetingService.meetings();
     const st = this.filterStatus();
     if (st !== 'All') {
-      list = list.filter(m => m.status === st);
+      list = list.filter((m) => m.status === st);
     }
     const q = this.searchQuery().toLowerCase().trim();
     if (q) {
       list = list.filter(
-        m =>
+        (m) =>
           m.title.toLowerCase().includes(q) ||
           (m.chairperson && m.chairperson.toLowerCase().includes(q)),
       );
@@ -1724,19 +1824,24 @@ export class MeetingListComponent implements OnInit {
 ```
 
 Create `src/app/features/meetings/meeting-form/meeting-form.component.html`:
+
 ```html
 <div class="max-w-3xl space-y-6">
   <div>
     <h1 class="text-2xl font-bold tracking-tight text-slate-900">
       {{ isEditMode() ? 'Edit Meeting' : 'Schedule New Meeting' }}
     </h1>
-    <p class="mt-1 text-sm text-slate-500">Provide meeting details to initialize the preparation and event workspace.</p>
+    <p class="mt-1 text-sm text-slate-500">
+      Provide meeting details to initialize the preparation and event workspace.
+    </p>
   </div>
 
   <app-card title="Meeting Information">
     <form (submit)="onSave(); $event.preventDefault()" class="space-y-4">
       <div>
-        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Meeting Title *</label>
+        <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+          >Meeting Title *</label
+        >
         <input
           type="text"
           [value]="title()"
@@ -1747,9 +1852,11 @@ Create `src/app/features/meetings/meeting-form/meeting-form.component.html`:
         />
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Meeting Type</label>
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+            >Meeting Type</label
+          >
           <select
             [value]="meetingType()"
             (change)="meetingType.set($any($event.target).value)"
@@ -1764,7 +1871,9 @@ Create `src/app/features/meetings/meeting-form/meeting-form.component.html`:
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Date *</label>
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+            >Date *</label
+          >
           <input
             type="date"
             [value]="meetingDate()"
@@ -1775,9 +1884,11 @@ Create `src/app/features/meetings/meeting-form/meeting-form.component.html`:
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Start Time</label>
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+            >Start Time</label
+          >
           <input
             type="time"
             [value]="startTime()"
@@ -1787,7 +1898,9 @@ Create `src/app/features/meetings/meeting-form/meeting-form.component.html`:
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Venue / Room</label>
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+            >Venue / Room</label
+          >
           <input
             type="text"
             [value]="venue()"
@@ -1798,9 +1911,11 @@ Create `src/app/features/meetings/meeting-form/meeting-form.component.html`:
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Presiding Officer / Chairperson</label>
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+            >Presiding Officer / Chairperson</label
+          >
           <input
             type="text"
             [value]="chairperson()"
@@ -1811,7 +1926,9 @@ Create `src/app/features/meetings/meeting-form/meeting-form.component.html`:
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Secretary</label>
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+            >Secretary</label
+          >
           <input
             type="text"
             [value]="secretary()"
@@ -1823,7 +1940,9 @@ Create `src/app/features/meetings/meeting-form/meeting-form.component.html`:
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Meeting Purpose / Notes</label>
+        <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase"
+          >Meeting Purpose / Notes</label
+        >
         <textarea
           [value]="purpose()"
           (input)="purpose.set($any($event.target).value)"
@@ -1833,7 +1952,7 @@ Create `src/app/features/meetings/meeting-form/meeting-form.component.html`:
         ></textarea>
       </div>
 
-      <div class="pt-4 flex items-center justify-between border-t border-slate-100">
+      <div class="flex items-center justify-between border-t border-slate-100 pt-4">
         <a routerLink="/meetings">
           <app-button variant="outline" type="button">Cancel</app-button>
         </a>
@@ -1847,6 +1966,7 @@ Create `src/app/features/meetings/meeting-form/meeting-form.component.html`:
 ```
 
 Create `src/app/features/meetings/meeting-form/meeting-form.component.ts`:
+
 ```typescript
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -1931,97 +2051,110 @@ export class MeetingFormComponent implements OnInit {
 ```
 
 Create `src/app/features/meetings/meeting-detail/meeting-detail.component.html`:
+
 ```html
 @if (meeting(); as m) {
-  <div class="space-y-6">
-    <!-- Top Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
-        <div class="flex items-center space-x-3">
-          <h1 class="text-2xl font-bold tracking-tight text-slate-900">{{ m.title }}</h1>
-          <app-badge [status]="m.status" />
-        </div>
-        <p class="mt-1 text-sm text-slate-500">
-          {{ m.meetingType }} Meeting • 📅 {{ m.meetingDate }} @if (m.startTime) { • 🕒 {{ m.startTime }} }
-        </p>
-      </div>
-
+<div class="space-y-6">
+  <!-- Top Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
       <div class="flex items-center space-x-3">
-        <a [routerLink]="['/meetings', m.id, 'edit']">
-          <app-button variant="outline" size="sm">Edit Details</app-button>
-        </a>
-        <app-button variant="primary" size="sm" (click)="statusModalOpen.set(true)">
-          Update Status
-        </app-button>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">{{ m.title }}</h1>
+        <app-badge [status]="m.status" />
       </div>
+      <p class="mt-1 text-sm text-slate-500">
+        {{ m.meetingType }} Meeting • 📅 {{ m.meetingDate }} @if (m.startTime) { • 🕒 {{ m.startTime
+        }} }
+      </p>
     </div>
 
-    <!-- Quick Info Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">Presiding Officer</div>
-        <div class="mt-1 text-base font-bold text-slate-800">{{ m.chairperson || 'Unspecified' }}</div>
-      </div>
-      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">Secretary</div>
-        <div class="mt-1 text-base font-bold text-slate-800">{{ m.secretary || 'Unspecified' }}</div>
-      </div>
-      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">Venue</div>
-        <div class="mt-1 text-base font-bold text-slate-800">{{ m.venue || 'Not specified' }}</div>
-      </div>
+    <div class="flex items-center space-x-3">
+      <a [routerLink]="['/meetings', m.id, 'edit']">
+        <app-button variant="outline" size="sm">Edit Details</app-button>
+      </a>
+      <app-button variant="primary" size="sm" (click)="statusModalOpen.set(true)">
+        Update Status
+      </app-button>
     </div>
-
-    <!-- Future Module Links (Phase 2 & 3 Roadmaps) -->
-    <app-card title="Meeting Modules Workspace">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="border border-slate-200 rounded-lg p-4 bg-slate-50">
-          <div class="font-bold text-sm text-slate-800">1. Checklist</div>
-          <p class="text-xs text-slate-500 mt-1">Preparation tasks & venue readiness</p>
-          <span class="inline-block mt-3 text-xs font-semibold text-slate-400">Phase 2 Module</span>
-        </div>
-
-        <div class="border border-slate-200 rounded-lg p-4 bg-slate-50">
-          <div class="font-bold text-sm text-slate-800">2. Agenda Builder</div>
-          <p class="text-xs text-slate-500 mt-1">Topics, presenters & allocated time</p>
-          <span class="inline-block mt-3 text-xs font-semibold text-slate-400">Phase 2 Module</span>
-        </div>
-
-        <div class="border border-slate-200 rounded-lg p-4 bg-slate-50">
-          <div class="font-bold text-sm text-slate-800">3. Attendance</div>
-          <p class="text-xs text-slate-500 mt-1">Roll call & quorum calculator</p>
-          <span class="inline-block mt-3 text-xs font-semibold text-slate-400">Phase 2 Module</span>
-        </div>
-
-        <div class="border border-slate-200 rounded-lg p-4 bg-slate-50">
-          <div class="font-bold text-sm text-slate-800">4. Live Minutes</div>
-          <p class="text-xs text-slate-500 mt-1">Motions, decisions & action items</p>
-          <span class="inline-block mt-3 text-xs font-semibold text-slate-400">Phase 3 Module</span>
-        </div>
-      </div>
-    </app-card>
-
-    <!-- Status Change Modal -->
-    <app-modal [isOpen]="statusModalOpen()" title="Change Meeting Status" (close)="statusModalOpen.set(false)">
-      <div class="space-y-4">
-        <p class="text-sm text-slate-600">Select the new lifecycle status for this meeting session:</p>
-        <div class="grid grid-cols-2 gap-2">
-          @for (st of allStatuses; track st) {
-            <button
-              (click)="changeStatus(st)"
-              class="px-3 py-2 text-xs font-bold rounded-lg border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 transition-colors text-left"
-            >
-              {{ st }}
-            </button>
-          }
-        </div>
-      </div>
-    </app-modal>
   </div>
+
+  <!-- Quick Info Cards -->
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+        Presiding Officer
+      </div>
+      <div class="mt-1 text-base font-bold text-slate-800">
+        {{ m.chairperson || 'Unspecified' }}
+      </div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Secretary</div>
+      <div class="mt-1 text-base font-bold text-slate-800">{{ m.secretary || 'Unspecified' }}</div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Venue</div>
+      <div class="mt-1 text-base font-bold text-slate-800">{{ m.venue || 'Not specified' }}</div>
+    </div>
+  </div>
+
+  <!-- Future Module Links (Phase 2 & 3 Roadmaps) -->
+  <app-card title="Meeting Modules Workspace">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div class="text-sm font-bold text-slate-800">1. Checklist</div>
+        <p class="mt-1 text-xs text-slate-500">Preparation tasks & venue readiness</p>
+        <span class="mt-3 inline-block text-xs font-semibold text-slate-400">Phase 2 Module</span>
+      </div>
+
+      <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div class="text-sm font-bold text-slate-800">2. Agenda Builder</div>
+        <p class="mt-1 text-xs text-slate-500">Topics, presenters & allocated time</p>
+        <span class="mt-3 inline-block text-xs font-semibold text-slate-400">Phase 2 Module</span>
+      </div>
+
+      <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div class="text-sm font-bold text-slate-800">3. Attendance</div>
+        <p class="mt-1 text-xs text-slate-500">Roll call & quorum calculator</p>
+        <span class="mt-3 inline-block text-xs font-semibold text-slate-400">Phase 2 Module</span>
+      </div>
+
+      <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <div class="text-sm font-bold text-slate-800">4. Live Minutes</div>
+        <p class="mt-1 text-xs text-slate-500">Motions, decisions & action items</p>
+        <span class="mt-3 inline-block text-xs font-semibold text-slate-400">Phase 3 Module</span>
+      </div>
+    </div>
+  </app-card>
+
+  <!-- Status Change Modal -->
+  <app-modal
+    [isOpen]="statusModalOpen()"
+    title="Change Meeting Status"
+    (close)="statusModalOpen.set(false)"
+  >
+    <div class="space-y-4">
+      <p class="text-sm text-slate-600">
+        Select the new lifecycle status for this meeting session:
+      </p>
+      <div class="grid grid-cols-2 gap-2">
+        @for (st of allStatuses; track st) {
+        <button
+          (click)="changeStatus(st)"
+          class="rounded-lg border border-slate-200 px-3 py-2 text-left text-xs font-bold transition-colors hover:border-indigo-500 hover:bg-indigo-50"
+        >
+          {{ st }}
+        </button>
+        }
+      </div>
+    </div>
+  </app-modal>
+</div>
 }
 ```
 
 Create `src/app/features/meetings/meeting-detail/meeting-detail.component.ts`:
+
 ```typescript
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -2035,7 +2168,14 @@ import { ModalComponent } from '@shared/components/modal/modal.component';
 
 @Component({
   selector: 'app-meeting-detail',
-  imports: [CommonModule, RouterLink, CardComponent, ButtonComponent, BadgeComponent, ModalComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    CardComponent,
+    ButtonComponent,
+    BadgeComponent,
+    ModalComponent,
+  ],
   templateUrl: './meeting-detail.component.html',
 })
 export class MeetingDetailComponent implements OnInit {
@@ -2072,36 +2212,43 @@ export class MeetingDetailComponent implements OnInit {
 ```
 
 Create `src/app/features/meetings/meetings.routes.ts`:
+
 ```typescript
 import { Routes } from '@angular/router';
 
 export const MEETINGS_ROUTES: Routes = [
   {
     path: '',
-    loadComponent: () => import('./meeting-list/meeting-list.component').then(m => m.MeetingListComponent),
+    loadComponent: () =>
+      import('./meeting-list/meeting-list.component').then((m) => m.MeetingListComponent),
   },
   {
     path: 'new',
-    loadComponent: () => import('./meeting-form/meeting-form.component').then(m => m.MeetingFormComponent),
+    loadComponent: () =>
+      import('./meeting-form/meeting-form.component').then((m) => m.MeetingFormComponent),
   },
   {
     path: ':id',
-    loadComponent: () => import('./meeting-detail/meeting-detail.component').then(m => m.MeetingDetailComponent),
+    loadComponent: () =>
+      import('./meeting-detail/meeting-detail.component').then((m) => m.MeetingDetailComponent),
   },
   {
     path: ':id/edit',
-    loadComponent: () => import('./meeting-form/meeting-form.component').then(m => m.MeetingFormComponent),
+    loadComponent: () =>
+      import('./meeting-form/meeting-form.component').then((m) => m.MeetingFormComponent),
   },
 ];
 ```
 
 Register route in `src/app/app.routes.ts`:
+
 ```typescript
 {
   path: 'meetings',
   loadChildren: () => import('@features/meetings/meetings.routes').then(m => m.MEETINGS_ROUTES),
 }
 ```
+
 And add navigation link in `src/app/layouts/main-layout/main-layout.component.html`.
 
 - [ ] **Step 4: Run tests to verify they pass (GREEN)**
@@ -2121,17 +2268,20 @@ git commit -m "feat(meetings): add full meetings CRUD workflow with list, form, 
 ### Task 7: Dynamic Dashboard Integration
 
 **Files:**
+
 - Modify: `src/app/features/dashboard/dashboard.component.ts`
 - Modify: `src/app/features/dashboard/dashboard.component.html`
 - Modify: `src/app/features/dashboard/dashboard.component.spec.ts`
 
 **Interfaces:**
+
 - Consumes: `OrganizationService`, `MeetingService`, `CardComponent`, `BadgeComponent`, `ButtonComponent`
 - Produces: Dynamic Dashboard displaying next meeting alert, organization onboarding alert, metrics counters, and recent meetings.
 
 - [ ] **Step 1: Write failing tests for Dynamic Dashboard (RED)**
 
 Update `src/app/features/dashboard/dashboard.component.spec.ts`:
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -2147,10 +2297,7 @@ describe('DashboardComponent', () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [DashboardComponent],
-      providers: [
-        provideRouter([]),
-        { provide: LOCAL_API, useClass: WebLocalApi },
-      ],
+      providers: [provideRouter([]), { provide: LOCAL_API, useClass: WebLocalApi }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DashboardComponent);
@@ -2176,28 +2323,36 @@ Expected: FAIL (missing new dashboard elements).
 - [ ] **Step 3: Implement Dynamic Dashboard (GREEN)**
 
 Update `src/app/features/dashboard/dashboard.component.html`:
+
 ```html
 <div class="space-y-6">
   <!-- Organization First-Run Banner -->
   @if (!isOrgConfigured()) {
-    <div class="rounded-xl border border-amber-300 bg-amber-50 p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
-        <h3 class="text-base font-bold text-amber-900">Welcome to OrgSecretary Offline</h3>
-        <p class="text-xs text-amber-700 mt-1">Your organization profile is not configured yet. Set up your organization name and letterhead branding.</p>
-      </div>
-      <a routerLink="/organization">
-        <app-button variant="primary" size="sm">Set Up Organization</app-button>
-      </a>
+  <div
+    class="flex flex-col gap-4 rounded-xl border border-amber-300 bg-amber-50 p-6 sm:flex-row sm:items-center sm:justify-between"
+  >
+    <div>
+      <h3 class="text-base font-bold text-amber-900">Welcome to OrgSecretary Offline</h3>
+      <p class="mt-1 text-xs text-amber-700">
+        Your organization profile is not configured yet. Set up your organization name and
+        letterhead branding.
+      </p>
     </div>
+    <a routerLink="/organization">
+      <app-button variant="primary" size="sm">Set Up Organization</app-button>
+    </a>
+  </div>
   }
 
   <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div>
       <h1 class="text-2xl font-bold tracking-tight text-slate-900">
         {{ orgName() ? orgName() + ' Overview' : 'Dashboard' }}
       </h1>
-      <p class="mt-1 text-sm text-slate-500">Meeting schedule, preparation progress, and secretarial workspace.</p>
+      <p class="mt-1 text-sm text-slate-500">
+        Meeting schedule, preparation progress, and secretarial workspace.
+      </p>
     </div>
     <div class="flex items-center space-x-3">
       <a routerLink="/meetings/new">
@@ -2208,41 +2363,52 @@ Update `src/app/features/dashboard/dashboard.component.html`:
 
   <!-- Next Scheduled Event Card -->
   @if (nextMeeting(); as next) {
-    <div class="rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-white p-6 shadow-sm">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-xs font-bold uppercase tracking-wider text-indigo-700">Next Scheduled Meeting</span>
-        <app-badge [status]="next.status" />
-      </div>
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-2">
-        <div>
-          <h2 class="text-xl font-bold text-slate-900">{{ next.title }}</h2>
-          <p class="text-sm text-slate-600 mt-1">
-            📅 {{ next.meetingDate }} @if (next.startTime) { • 🕒 {{ next.startTime }} } @if (next.venue) { • 📍 {{ next.venue }} }
-          </p>
-        </div>
-        <a [routerLink]="['/meetings', next.id]">
-          <app-button variant="primary" size="sm">Open Workspace →</app-button>
-        </a>
-      </div>
+  <div
+    class="rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-white p-6 shadow-sm"
+  >
+    <div class="mb-2 flex items-center justify-between">
+      <span class="text-xs font-bold tracking-wider text-indigo-700 uppercase"
+        >Next Scheduled Meeting</span
+      >
+      <app-badge [status]="next.status" />
     </div>
+    <div class="mt-2 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-slate-900">{{ next.title }}</h2>
+        <p class="mt-1 text-sm text-slate-600">
+          📅 {{ next.meetingDate }} @if (next.startTime) { • 🕒 {{ next.startTime }} } @if
+          (next.venue) { • 📍 {{ next.venue }} }
+        </p>
+      </div>
+      <a [routerLink]="['/meetings', next.id]">
+        <app-button variant="primary" size="sm">Open Workspace →</app-button>
+      </a>
+    </div>
+  </div>
   }
 
   <!-- Metrics Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Meetings</div>
+      <div class="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+        Total Meetings
+      </div>
       <div class="mt-2 text-2xl font-bold text-slate-800">{{ totalMeetings() }}</div>
     </div>
     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div class="text-xs font-semibold uppercase tracking-wider text-indigo-600">Upcoming</div>
+      <div class="text-xs font-semibold tracking-wider text-indigo-600 uppercase">Upcoming</div>
       <div class="mt-2 text-2xl font-bold text-indigo-600">{{ upcomingCount() }}</div>
     </div>
     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div class="text-xs font-semibold uppercase tracking-wider text-amber-600">In Preparation</div>
+      <div class="text-xs font-semibold tracking-wider text-amber-600 uppercase">
+        In Preparation
+      </div>
       <div class="mt-2 text-2xl font-bold text-amber-600">{{ prepCount() }}</div>
     </div>
     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Approved Sessions</div>
+      <div class="text-xs font-semibold tracking-wider text-emerald-600 uppercase">
+        Approved Sessions
+      </div>
       <div class="mt-2 text-2xl font-bold text-emerald-600">{{ approvedCount() }}</div>
     </div>
   </div>
@@ -2250,41 +2416,46 @@ Update `src/app/features/dashboard/dashboard.component.html`:
   <!-- Recent Meetings -->
   <app-card title="Recent & Upcoming Meetings" subtitle="Direct access to meeting workspaces">
     @if (recentMeetings().length === 0) {
-      <div class="text-center py-8">
-        <p class="text-sm text-slate-500">No meetings recorded yet.</p>
-        <div class="mt-3">
-          <a routerLink="/meetings/new">
-            <app-button variant="outline" size="sm">+ Schedule First Meeting</app-button>
+    <div class="py-8 text-center">
+      <p class="text-sm text-slate-500">No meetings recorded yet.</p>
+      <div class="mt-3">
+        <a routerLink="/meetings/new">
+          <app-button variant="outline" size="sm">+ Schedule First Meeting</app-button>
+        </a>
+      </div>
+    </div>
+    } @else {
+    <div class="divide-y divide-slate-100">
+      @for (m of recentMeetings(); track m.id) {
+      <div class="flex items-center justify-between py-3">
+        <div>
+          <a
+            [routerLink]="['/meetings', m.id]"
+            class="text-sm font-semibold text-slate-800 hover:text-indigo-600"
+          >
+            {{ m.title }}
+          </a>
+          <div class="mt-0.5 text-xs text-slate-400">{{ m.meetingType }} • {{ m.meetingDate }}</div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <app-badge [status]="m.status" />
+          <a
+            [routerLink]="['/meetings', m.id]"
+            class="text-xs font-bold text-indigo-600 hover:text-indigo-800"
+          >
+            View →
           </a>
         </div>
       </div>
-    } @else {
-      <div class="divide-y divide-slate-100">
-        @for (m of recentMeetings(); track m.id) {
-          <div class="py-3 flex items-center justify-between">
-            <div>
-              <a [routerLink]="['/meetings', m.id]" class="font-semibold text-sm text-slate-800 hover:text-indigo-600">
-                {{ m.title }}
-              </a>
-              <div class="text-xs text-slate-400 mt-0.5">
-                {{ m.meetingType }} • {{ m.meetingDate }}
-              </div>
-            </div>
-            <div class="flex items-center space-x-3">
-              <app-badge [status]="m.status" />
-              <a [routerLink]="['/meetings', m.id]" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">
-                View →
-              </a>
-            </div>
-          </div>
-        }
-      </div>
+      }
+    </div>
     }
   </app-card>
 </div>
 ```
 
 Update `src/app/features/dashboard/dashboard.component.ts`:
+
 ```typescript
 import { Component, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -2310,15 +2481,16 @@ export class DashboardComponent implements OnInit {
 
   totalMeetings = computed(() => this.meetingService.meetings().length);
   upcomingCount = computed(() => this.meetingService.upcomingMeetings().length);
-  prepCount = computed(() => this.meetingService.meetings().filter(m => m.status === 'In Preparation').length);
-  approvedCount = computed(() => this.meetingService.meetings().filter(m => m.status === 'Approved').length);
+  prepCount = computed(
+    () => this.meetingService.meetings().filter((m) => m.status === 'In Preparation').length,
+  );
+  approvedCount = computed(
+    () => this.meetingService.meetings().filter((m) => m.status === 'Approved').length,
+  );
   recentMeetings = computed(() => this.meetingService.meetings().slice(0, 5));
 
   async ngOnInit(): Promise<void> {
-    await Promise.all([
-      this.orgService.loadOrganization(),
-      this.meetingService.loadMeetings(),
-    ]);
+    await Promise.all([this.orgService.loadOrganization(), this.meetingService.loadMeetings()]);
   }
 }
 ```
@@ -2340,9 +2512,11 @@ git commit -m "feat(dashboard): integrate dynamic metrics, next event alert, and
 ### Task 8: Full Verification & Formatting
 
 **Files:**
+
 - Repository-wide
 
 **Interfaces:**
+
 - Produces: 100% formatted codebase, passing unit test suites, and clean Angular & Desktop builds.
 
 - [ ] **Step 1: Run Prettier formatting**

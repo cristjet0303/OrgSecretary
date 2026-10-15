@@ -12,10 +12,7 @@ describe('MeetingListComponent', () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [MeetingListComponent],
-      providers: [
-        provideRouter([]),
-        { provide: LOCAL_API, useClass: WebLocalApi },
-      ],
+      providers: [provideRouter([]), { provide: LOCAL_API, useClass: WebLocalApi }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MeetingListComponent);

@@ -16,6 +16,7 @@ The goal of Phase 1 is to establish the reliable offline foundation for **OrgSec
 ## 2. Desktop Shell & Local Database Architecture
 
 ### 2.1 Electron Shell (`desktop/`)
+
 - **`desktop/main.ts`**:
   - Main Electron application process.
   - Enforces `contextIsolation: true`, `nodeIntegration: false`, and `webSecurity: true`.
@@ -36,7 +37,9 @@ The goal of Phase 1 is to establish the reliable offline foundation for **OrgSec
   - IPC handler registrations connecting renderer IPC calls to repository methods with input validation.
 
 ### 2.2 Dual-Target `LocalApi` Bridge (`src/app/core/local-api/`)
+
 To enable rapid testing in Vitest and standard browser development (`ng serve`) alongside native Electron desktop execution:
+
 - **`LocalApi` Abstract Interface**:
   - Organization operations: `getOrganization()`, `saveOrganization(org)`.
   - Meeting operations: `getMeetings(filter?)`, `getMeetingById(id)`, `createMeeting(meeting)`, `updateMeeting(id, meeting)`, `deleteMeeting(id)`.
@@ -113,6 +116,7 @@ CREATE INDEX IF NOT EXISTS idx_meetings_status ON meetings(status);
 ## 4. Angular Domain Modules & Feature Specifications
 
 ### 4.1 Organization Profile (`src/app/features/organization/`)
+
 - **Route**: `/organization`
 - **Component**: `OrganizationComponent`
 - **Fields**: Name, acronym, address, contact details, document header lines.
@@ -122,6 +126,7 @@ CREATE INDEX IF NOT EXISTS idx_meetings_status ON meetings(status);
   - Updates global organization state signal in `OrganizationService`.
 
 ### 4.2 Meeting Management CRUD (`src/app/features/meetings/`)
+
 - **Routes**:
   - `/meetings`: Meeting list with search, status filters (`All`, `Planned`, `In Preparation`, `In Progress`, `For Review`, `Approved`, `Archived`), and responsive card grid.
   - `/meetings/new`: Create meeting form.
@@ -142,6 +147,7 @@ CREATE INDEX IF NOT EXISTS idx_meetings_status ON meetings(status);
   - `status`: MeetingStatus (`Planned` | `In Preparation` | `In Progress` | `For Review` | `Approved` | `Archived`)
 
 ### 4.3 Dynamic Dashboard (`src/app/features/dashboard/`)
+
 - **Route**: `/dashboard`
 - **Content**:
   - **Organization Banner**: If not configured, prompts setup; if configured, displays organization identity.
@@ -151,6 +157,7 @@ CREATE INDEX IF NOT EXISTS idx_meetings_status ON meetings(status);
   - **Quick Action Bar**: `New Meeting`, `Organization Profile`, `View Meetings`.
 
 ### 4.4 Shared UI Primitives (`src/app/shared/components/`)
+
 - `ButtonComponent`: Existing signal-driven button with primary/secondary/outline variants.
 - `BadgeComponent`: Colored pill component displaying status (`Planned` (indigo), `In Preparation` (amber), `In Progress` (blue), `For Review` (purple), `Approved` (emerald), `Archived` (slate)).
 - `CardComponent`: Styled container with header, body, and footer slots.

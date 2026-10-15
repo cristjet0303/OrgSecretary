@@ -1,8 +1,6 @@
 <div class="max-w-4xl space-y-6">
   <div>
-    <h1 class="text-2xl font-bold tracking-tight text-slate-900">
-      Organization Profile
-    </h1>
+    <h1 class="text-2xl font-bold tracking-tight text-slate-900">Organization Profile</h1>
     <p class="mt-1 text-sm text-slate-500">
       Configure your organization's identity, branding, and document letterhead headers.
     </p>
@@ -22,9 +20,7 @@
   >
     <form (submit)="onSubmit(); $event.preventDefault()" class="space-y-4">
       <div>
-        <label
-          class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-        >
+        <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
           Organization Name *
         </label>
         <input
@@ -33,15 +29,13 @@
           (input)="orgName.set($any($event.target).value)"
           placeholder="e.g. Sangguniang Barangay Council"
           required
-          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
         />
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label
-            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-          >
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
             Acronym / Short Name
           </label>
           <input
@@ -49,14 +43,12 @@
             [value]="orgAcronym()"
             (input)="orgAcronym.set($any($event.target).value)"
             placeholder="e.g. SBC"
-            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
           />
         </div>
 
         <div>
-          <label
-            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-          >
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
             Contact Details
           </label>
           <input
@@ -64,15 +56,13 @@
             [value]="orgContact()"
             (input)="orgContact.set($any($event.target).value)"
             placeholder="e.g. secretary@barangay.gov.ph"
-            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
           />
         </div>
       </div>
 
       <div>
-        <label
-          class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-        >
+        <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
           Office Address
         </label>
         <textarea
@@ -80,16 +70,12 @@
           (input)="orgAddress.set($any($event.target).value)"
           rows="2"
           placeholder="e.g. Barangay Hall, Barangay Central, Quezon City"
-          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
         ></textarea>
       </div>
 
       <div class="flex justify-end pt-4">
-        <app-button
-          type="submit"
-          variant="primary"
-          [disabled]="!orgName().trim()"
-        >
+        <app-button type="submit" variant="primary" [disabled]="!orgName().trim()">
           Save Organization Profile
         </app-button>
       </div>

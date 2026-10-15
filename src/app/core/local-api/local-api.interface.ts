@@ -9,9 +9,7 @@ export interface LocalApi {
   ): Promise<Organization>;
   getMeetings(filter?: MeetingFilter): Promise<Meeting[]>;
   getMeetingById(id: string): Promise<Meeting | null>;
-  createMeeting(
-    meeting: Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<Meeting>;
+  createMeeting(meeting: Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>): Promise<Meeting>;
   updateMeeting(
     id: string,
     meeting: Partial<Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>>,

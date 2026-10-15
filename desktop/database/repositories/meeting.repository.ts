@@ -18,7 +18,7 @@ export class MeetingRepository {
     query += ' ORDER BY meeting_date ASC';
     const rows = db.prepare(query).all(...params) as any[];
 
-    return rows.map(r => ({
+    return rows.map((r) => ({
       id: r.id,
       title: r.title,
       meetingType: r.meeting_type,
@@ -65,10 +65,12 @@ export class MeetingRepository {
     const id = 'meeting-' + Date.now();
     const now = new Date().toISOString();
 
-    db.prepare(`
+    db.prepare(
+      `
       INSERT INTO meetings (id, title, meeting_type, meeting_number, meeting_date, start_time, end_time, venue, chairperson, secretary, purpose, status, related_meeting_id, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
+    `,
+    ).run(
       id,
       m.title,
       m.meetingType,
@@ -83,7 +85,7 @@ export class MeetingRepository {
       m.status || 'Planned',
       m.relatedMeetingId || null,
       now,
-      now
+      now,
     );
 
     return this.getById(id);
@@ -97,11 +99,13 @@ export class MeetingRepository {
     const updated = { ...existing, ...m };
     const now = new Date().toISOString();
 
-    db.prepare(`
+    db.prepare(
+      `
       UPDATE meetings
       SET title = ?, meeting_type = ?, meeting_number = ?, meeting_date = ?, start_time = ?, end_time = ?, venue = ?, chairperson = ?, secretary = ?, purpose = ?, status = ?, updated_at = ?
       WHERE id = ?
-    `).run(
+    `,
+    ).run(
       updated.title,
       updated.meetingType,
       updated.meetingNumber || null,
@@ -114,7 +118,7 @@ export class MeetingRepository {
       updated.purpose || null,
       updated.status,
       now,
-      id
+      id,
     );
 
     return this.getById(id);

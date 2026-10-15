@@ -38,12 +38,12 @@ export class WebLocalApi implements LocalApi {
     const data = localStorage.getItem(this.meetingsKey);
     let list: Meeting[] = data ? JSON.parse(data) : [];
     if (filter?.status && filter.status !== 'All') {
-      list = list.filter(m => m.status === filter.status);
+      list = list.filter((m) => m.status === filter.status);
     }
     if (filter?.searchQuery) {
       const q = filter.searchQuery.toLowerCase();
       list = list.filter(
-        m =>
+        (m) =>
           m.title.toLowerCase().includes(q) ||
           (m.chairperson && m.chairperson.toLowerCase().includes(q)),
       );
@@ -53,12 +53,10 @@ export class WebLocalApi implements LocalApi {
 
   async getMeetingById(id: string): Promise<Meeting | null> {
     const list = await this.getMeetings();
-    return list.find(m => m.id === id) || null;
+    return list.find((m) => m.id === id) || null;
   }
 
-  async createMeeting(
-    meeting: Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<Meeting> {
+  async createMeeting(meeting: Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>): Promise<Meeting> {
     const list = await this.getMeetings();
     const now = new Date().toISOString();
     const created: Meeting = {
@@ -77,7 +75,7 @@ export class WebLocalApi implements LocalApi {
     updates: Partial<Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>>,
   ): Promise<Meeting> {
     const list = await this.getMeetings();
-    const idx = list.findIndex(m => m.id === id);
+    const idx = list.findIndex((m) => m.id === id);
     if (idx === -1) throw new Error(`Meeting with id ${id} not found`);
     const updated: Meeting = {
       ...list[idx],
@@ -91,7 +89,7 @@ export class WebLocalApi implements LocalApi {
 
   async deleteMeeting(id: string): Promise<boolean> {
     const list = await this.getMeetings();
-    const filtered = list.filter(m => m.id !== id);
+    const filtered = list.filter((m) => m.id !== id);
     localStorage.setItem(this.meetingsKey, JSON.stringify(filtered));
     return filtered.length < list.length;
   }

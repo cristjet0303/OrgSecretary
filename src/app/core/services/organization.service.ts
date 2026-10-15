@@ -8,9 +8,7 @@ export class OrganizationService {
 
   organization = signal<Organization | null>(null);
   isLoading = signal<boolean>(false);
-  isConfigured = computed(
-    () => this.organization() !== null && !!this.organization()?.name,
-  );
+  isConfigured = computed(() => this.organization() !== null && !!this.organization()?.name);
 
   async loadOrganization(): Promise<Organization | null> {
     this.isLoading.set(true);

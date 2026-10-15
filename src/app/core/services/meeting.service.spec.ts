@@ -9,10 +9,7 @@ describe('MeetingService', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [
-        MeetingService,
-        { provide: LOCAL_API, useClass: WebLocalApi },
-      ],
+      providers: [MeetingService, { provide: LOCAL_API, useClass: WebLocalApi }],
     });
     service = TestBed.inject(MeetingService);
   });

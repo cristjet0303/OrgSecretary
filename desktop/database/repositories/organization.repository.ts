@@ -25,11 +25,13 @@ export class OrganizationRepository {
     const id = org.id || existing?.id || 'org-' + Date.now();
 
     if (existing) {
-      db.prepare(`
+      db.prepare(
+        `
         UPDATE organizations
         SET name = ?, acronym = ?, address = ?, contact_details = ?, logo_path = ?, header_lines_json = ?, updated_at = ?
         WHERE id = ?
-      `).run(
+      `,
+      ).run(
         org.name,
         org.acronym || null,
         org.address || null,
@@ -37,13 +39,15 @@ export class OrganizationRepository {
         org.logoPath || null,
         JSON.stringify(org.headerLines || []),
         now,
-        id
+        id,
       );
     } else {
-      db.prepare(`
+      db.prepare(
+        `
         INSERT INTO organizations (id, name, acronym, address, contact_details, logo_path, header_lines_json, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(
+      `,
+      ).run(
         id,
         org.name,
         org.acronym || null,
@@ -52,7 +56,7 @@ export class OrganizationRepository {
         org.logoPath || null,
         JSON.stringify(org.headerLines || []),
         now,
-        now
+        now,
       );
     }
     return this.get();

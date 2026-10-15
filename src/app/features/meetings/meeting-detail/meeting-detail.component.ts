@@ -46,10 +46,7 @@ export class MeetingDetailComponent implements OnInit {
 
   async changeStatus(newStatus: MeetingStatus): Promise<void> {
     if (!this.meeting()) return;
-    const updated = await this.meetingService.updateMeetingStatus(
-      this.meeting()!.id,
-      newStatus,
-    );
+    const updated = await this.meetingService.updateMeetingStatus(this.meeting()!.id, newStatus);
     this.meeting.set(updated);
     this.statusModalOpen.set(false);
   }

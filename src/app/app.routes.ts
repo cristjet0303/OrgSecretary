@@ -19,16 +19,12 @@ export const routes: Routes = [
       {
         path: 'organization',
         loadChildren: () =>
-          import('@features/organization/organization.routes').then(
-            (m) => m.ORGANIZATION_ROUTES,
-          ),
+          import('@features/organization/organization.routes').then((m) => m.ORGANIZATION_ROUTES),
       },
       {
         path: 'meetings',
         loadChildren: () =>
-          import('@features/meetings/meetings.routes').then(
-            (m) => m.MEETINGS_ROUTES,
-          ),
+          import('@features/meetings/meetings.routes').then((m) => m.MEETINGS_ROUTES),
       },
     ],
   },

@@ -13,8 +13,7 @@ export class BadgeComponent {
   status = input<MeetingStatus | string>('Planned');
 
   badgeClasses = computed(() => {
-    const base =
-      'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border';
+    const base = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border';
     switch (this.status()) {
       case 'Approved':
         return `${base} bg-emerald-50 text-emerald-700 border-emerald-200`;

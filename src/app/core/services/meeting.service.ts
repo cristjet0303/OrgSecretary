@@ -12,7 +12,7 @@ export class MeetingService {
 
   upcomingMeetings = computed(() => {
     return this.meetings()
-      .filter(m => m.status === 'Planned' || m.status === 'In Preparation')
+      .filter((m) => m.status === 'Planned' || m.status === 'In Preparation')
       .sort((a, b) => a.meetingDate.localeCompare(b.meetingDate));
   });
 
@@ -42,9 +42,7 @@ export class MeetingService {
     }
   }
 
-  async createMeeting(
-    meeting: Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<Meeting> {
+  async createMeeting(meeting: Omit<Meeting, 'id' | 'createdAt' | 'updatedAt'>): Promise<Meeting> {
     this.isLoading.set(true);
     try {
       const created = await this.localApi.createMeeting(meeting);
@@ -72,10 +70,7 @@ export class MeetingService {
     }
   }
 
-  async updateMeetingStatus(
-    id: string,
-    status: MeetingStatus,
-  ): Promise<Meeting> {
+  async updateMeetingStatus(id: string, status: MeetingStatus): Promise<Meeting> {
     return this.updateMeeting(id, { status });
   }
 

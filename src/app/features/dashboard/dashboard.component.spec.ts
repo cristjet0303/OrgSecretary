@@ -12,10 +12,7 @@ describe('DashboardComponent', () => {
     localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [DashboardComponent],
-      providers: [
-        provideRouter([]),
-        { provide: LOCAL_API, useClass: WebLocalApi },
-      ],
+      providers: [provideRouter([]), { provide: LOCAL_API, useClass: WebLocalApi }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DashboardComponent);

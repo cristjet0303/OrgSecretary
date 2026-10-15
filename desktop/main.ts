@@ -23,10 +23,7 @@ function createWindow(): void {
   registerIpcHandlers();
 
   // In production load dist/OrgSecretary/browser/index.html, in dev load local dev server
-  const distPath = path.join(
-    __dirname,
-    '../dist/OrgSecretary/browser/index.html',
-  );
+  const distPath = path.join(__dirname, '../dist/OrgSecretary/browser/index.html');
   if (app.isPackaged || !process.env['ELECTRON_START_URL']) {
     mainWindow.loadFile(distPath);
   } else {

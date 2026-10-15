@@ -9,10 +9,7 @@ describe('OrganizationService', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [
-        OrganizationService,
-        { provide: LOCAL_API, useClass: WebLocalApi },
-      ],
+      providers: [OrganizationService, { provide: LOCAL_API, useClass: WebLocalApi }],
     });
     service = TestBed.inject(OrganizationService);
   });

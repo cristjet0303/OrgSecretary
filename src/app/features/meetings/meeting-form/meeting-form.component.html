@@ -11,9 +11,7 @@
   <app-card title="Meeting Information">
     <form (submit)="onSave(); $event.preventDefault()" class="space-y-4">
       <div>
-        <label
-          class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-        >
+        <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
           Meeting Title *
         </label>
         <input
@@ -28,9 +26,7 @@
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label
-            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-          >
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
             Meeting Type
           </label>
           <select
@@ -47,9 +43,7 @@
         </div>
 
         <div>
-          <label
-            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-          >
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
             Date *
           </label>
           <input
@@ -64,9 +58,7 @@
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label
-            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-          >
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
             Start Time
           </label>
           <input
@@ -78,9 +70,7 @@
         </div>
 
         <div>
-          <label
-            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-          >
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
             Venue / Room
           </label>
           <input
@@ -95,9 +85,7 @@
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label
-            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-          >
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
             Presiding Officer / Chairperson
           </label>
           <input
@@ -110,9 +98,7 @@
         </div>
 
         <div>
-          <label
-            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-          >
+          <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
             Secretary
           </label>
           <input
@@ -126,9 +112,7 @@
       </div>
 
       <div>
-        <label
-          class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
-        >
+        <label class="mb-1 block text-xs font-semibold tracking-wider text-slate-700 uppercase">
           Meeting Purpose / Notes
         </label>
         <textarea
@@ -140,17 +124,11 @@
         ></textarea>
       </div>
 
-      <div
-        class="flex items-center justify-between border-t border-slate-100 pt-4"
-      >
+      <div class="flex items-center justify-between border-t border-slate-100 pt-4">
         <a routerLink="/meetings">
           <app-button variant="outline" type="button">Cancel</app-button>
         </a>
-        <app-button
-          type="submit"
-          variant="primary"
-          [disabled]="!title().trim() || !meetingDate()"
-        >
+        <app-button type="submit" variant="primary" [disabled]="!title().trim() || !meetingDate()">
           {{ isEditMode() ? 'Save Changes' : 'Create Meeting' }}
         </app-button>
       </div>
