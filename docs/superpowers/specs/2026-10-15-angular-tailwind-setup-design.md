@@ -17,6 +17,7 @@ The `OrgSecretary` project is an Angular application initialized with Angular 21
 The project adheres to a **Feature-Driven / Domain-Sliced Architecture**.
 
 ### 2.1 Directory Layout (`src/app/`)
+
 ```text
 src/
 ├── app/
@@ -49,7 +50,9 @@ src/
 ```
 
 ### 2.2 TypeScript Path Aliases (`tsconfig.json`)
+
 Update `tsconfig.json` compiler options:
+
 ```json
 "paths": {
   "@core/*": ["src/app/core/*"],
@@ -64,6 +67,7 @@ Update `tsconfig.json` compiler options:
 ## 3. Styling & Developer Tooling
 
 ### 3.1 Tailwind CSS v4 Setup
+
 - **Packages**:
   - `tailwindcss` (v4)
   - `@tailwindcss/postcss`
@@ -78,7 +82,7 @@ Update `tsconfig.json` compiler options:
   ```
 - **Global Stylesheet** (`src/styles.css`):
   ```css
-  @import "tailwindcss";
+  @import 'tailwindcss';
 
   @layer base {
     body {
@@ -88,6 +92,7 @@ Update `tsconfig.json` compiler options:
   ```
 
 ### 3.2 Prettier Configuration
+
 - **Package**: `prettier-plugin-tailwindcss`
 - Update `.prettierrc`:
   ```json

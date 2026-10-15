@@ -32,18 +32,21 @@
 ### Task 1: Install Dependencies & Configure PostCSS + Prettier
 
 **Files:**
+
 - Modify: `package.json`
 - Create: `postcss.config.json`
 - Modify: `.prettierrc`
 - Modify: `src/styles.css`
 
 **Interfaces:**
+
 - Consumes: `package.json`
 - Produces: installed `node_modules`, `postcss.config.json` with `@tailwindcss/postcss`, `.prettierrc` with `prettier-plugin-tailwindcss`, and `src/styles.css` importing `tailwindcss`.
 
 - [ ] **Step 1: Install npm dependencies and Tailwind v4 packages**
 
 Run:
+
 ```bash
 npm install
 npm install -D tailwindcss @tailwindcss/postcss postcss prettier-plugin-tailwindcss
@@ -52,6 +55,7 @@ npm install -D tailwindcss @tailwindcss/postcss postcss prettier-plugin-tailwind
 - [ ] **Step 2: Create PostCSS configuration file**
 
 Create `postcss.config.json`:
+
 ```json
 {
   "plugins": {
@@ -63,6 +67,7 @@ Create `postcss.config.json`:
 - [ ] **Step 3: Update `.prettierrc` with Tailwind plugin and format script**
 
 Update `.prettierrc`:
+
 ```json
 {
   "tabWidth": 2,
@@ -75,13 +80,15 @@ Update `.prettierrc`:
   "plugins": ["prettier-plugin-tailwindcss"]
 }
 ```
+
 Add `"format": "prettier --write ."` to `package.json` scripts.
 
 - [ ] **Step 4: Update `src/styles.css` with Tailwind v4 entrypoint**
 
 In `src/styles.css`:
+
 ```css
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @layer base {
   body {
@@ -107,9 +114,11 @@ git commit -m "chore: setup tailwindcss v4, postcss, and prettier plugin"
 ### Task 2: Configure TypeScript Path Aliases
 
 **Files:**
+
 - Modify: `tsconfig.json`
 
 **Interfaces:**
+
 - Consumes: base `tsconfig.json`
 - Produces: compiler options path mappings:
   - `@core/*`: `["src/app/core/*"]`
@@ -120,6 +129,7 @@ git commit -m "chore: setup tailwindcss v4, postcss, and prettier plugin"
 - [ ] **Step 1: Add path mappings to `tsconfig.json`**
 
 In `tsconfig.json` under `compilerOptions`:
+
 ```json
 "baseUrl": "./",
 "paths": {
@@ -147,10 +157,12 @@ git commit -m "config: configure typescript path aliases for core, shared, layou
 ### Task 3: Shared UI Primitive (ButtonComponent)
 
 **Files:**
+
 - Create: `src/app/shared/components/button/button.component.ts`
 - Create: `src/app/shared/components/button/button.component.spec.ts`
 
 **Interfaces:**
+
 - Consumes: Angular `input()`, `computed()`
 - Produces: `ButtonComponent`
   - `variant = input<'primary' | 'secondary' | 'outline'>('primary')`
@@ -161,6 +173,7 @@ git commit -m "config: configure typescript path aliases for core, shared, layou
 - [ ] **Step 1: Write the failing unit test for `ButtonComponent`**
 
 Create `src/app/shared/components/button/button.component.spec.ts`:
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ButtonComponent } from './button.component';
@@ -203,6 +216,7 @@ Expected: FAIL (file or class not found).
 - [ ] **Step 3: Implement `ButtonComponent`**
 
 Create `src/app/shared/components/button/button.component.ts`:
+
 ```typescript
 import { Component, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -226,8 +240,9 @@ export class ButtonComponent {
   disabled = input<boolean>(false);
 
   buttonClasses = computed(() => {
-    const base = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-    
+    const base =
+      'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+
     const sizeMap: Record<ButtonSize, string> = {
       sm: 'px-3 py-1.5 text-xs',
       md: 'px-4 py-2 text-sm',
@@ -237,7 +252,8 @@ export class ButtonComponent {
     const variantMap: Record<ButtonVariant, string> = {
       primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
       secondary: 'bg-slate-800 text-white hover:bg-slate-900 focus:ring-slate-700',
-      outline: 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-indigo-500',
+      outline:
+        'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-indigo-500',
     };
 
     return `${base} ${sizeMap[this.size()]} ${variantMap[this.variant()]}`;
@@ -262,17 +278,20 @@ git commit -m "feat(shared): add signals-based ButtonComponent with tailwind sty
 ### Task 4: Core Services & Application Configuration
 
 **Files:**
+
 - Create: `src/app/core/services/theme.service.ts`
 - Create: `src/app/core/services/theme.service.spec.ts`
 - Modify: `src/app/app.config.ts`
 
 **Interfaces:**
+
 - Consumes: Angular `signal()`, `PLATFORM_ID`, `inject()`
 - Produces: `ThemeService` with `isDarkMode = signal<boolean>(false)` and `toggleTheme(): void`; `provideHttpClient(withFetch())` in `appConfig`.
 
 - [ ] **Step 1: Write the failing unit test for `ThemeService`**
 
 Create `src/app/core/services/theme.service.spec.ts`:
+
 ```typescript
 import { TestBed } from '@angular/core/testing';
 import { ThemeService } from './theme.service';
@@ -305,6 +324,7 @@ Expected: FAIL (cannot find ThemeService).
 - [ ] **Step 3: Implement `ThemeService` and update `app.config.ts`**
 
 Create `src/app/core/services/theme.service.ts`:
+
 ```typescript
 import { Injectable, signal } from '@angular/core';
 
@@ -315,12 +335,13 @@ export class ThemeService {
   isDarkMode = signal<boolean>(false);
 
   toggleTheme(): void {
-    this.isDarkMode.update(dark => !dark);
+    this.isDarkMode.update((dark) => !dark);
   }
 }
 ```
 
 In `src/app/app.config.ts`, add `provideHttpClient(withFetch())`:
+
 ```typescript
 import { ApplicationConfig, provideBrowserGlobal } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -328,10 +349,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes),
-    provideHttpClient(withFetch()),
-  ],
+  providers: [provideRouter(routes), provideHttpClient(withFetch())],
 };
 ```
 
@@ -352,6 +370,7 @@ git commit -m "feat(core): add ThemeService and configure provideHttpClient with
 ### Task 5: Layout Shell (MainLayoutComponent) & App Root Cleanup
 
 **Files:**
+
 - Create: `src/app/layouts/main-layout/main-layout.component.ts`
 - Create: `src/app/layouts/main-layout/main-layout.component.html`
 - Create: `src/app/layouts/main-layout/main-layout.component.spec.ts`
@@ -360,12 +379,14 @@ git commit -m "feat(core): add ThemeService and configure provideHttpClient with
 - Modify: `src/app/app.spec.ts`
 
 **Interfaces:**
+
 - Consumes: `@core/services/theme.service`, `RouterOutlet`, `RouterLink`
 - Produces: `MainLayoutComponent` with responsive top navbar, sidebar navigation, and main `<router-outlet />`. Minimal `app.html` containing `<router-outlet />`.
 
 - [ ] **Step 1: Write the failing unit test for `MainLayoutComponent`**
 
 Create `src/app/layouts/main-layout/main-layout.component.spec.ts`:
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -405,19 +426,26 @@ Expected: FAIL.
 - [ ] **Step 3: Implement `MainLayoutComponent` and clean `app.html` / `app.ts`**
 
 Create `src/app/layouts/main-layout/main-layout.component.html`:
+
 ```html
-<div class="min-h-screen bg-slate-50 flex flex-col">
+<div class="flex min-h-screen flex-col bg-slate-50">
   <!-- Top Navigation Bar -->
-  <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30">
+  <header
+    class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6"
+  >
     <div class="flex items-center space-x-3">
-      <div class="h-9 w-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+      <div
+        class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-lg font-bold text-white shadow-sm"
+      >
         O
       </div>
-      <span class="font-bold text-xl text-slate-800 tracking-tight">OrgSecretary</span>
+      <span class="text-xl font-bold tracking-tight text-slate-800">OrgSecretary</span>
     </div>
 
     <div class="flex items-center space-x-4">
-      <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+      <span
+        class="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700"
+      >
         Angular 21 • Tailwind v4
       </span>
     </div>
@@ -425,17 +453,21 @@ Create `src/app/layouts/main-layout/main-layout.component.html`:
 
   <div class="flex flex-1">
     <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-slate-200 p-4 hidden md:block">
+    <aside class="hidden w-64 border-r border-slate-200 bg-white p-4 md:block">
       <nav class="space-y-1">
-        <a routerLink="/dashboard" routerLinkActive="bg-indigo-50 text-indigo-700 font-semibold" class="flex items-center px-3 py-2 text-sm rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="bg-indigo-50 text-indigo-700 font-semibold"
+          class="flex items-center rounded-lg px-3 py-2 text-sm text-slate-600 transition-colors hover:bg-slate-100"
+        >
           <span class="mr-3">📊</span> Dashboard
         </a>
       </nav>
     </aside>
 
     <!-- Main Content Area -->
-    <main class="flex-1 p-6 md:p-8 overflow-y-auto">
-      <div class="max-w-7xl mx-auto">
+    <main class="flex-1 overflow-y-auto p-6 md:p-8">
+      <div class="mx-auto max-w-7xl">
         <router-outlet />
       </div>
     </main>
@@ -444,6 +476,7 @@ Create `src/app/layouts/main-layout/main-layout.component.html`:
 ```
 
 Create `src/app/layouts/main-layout/main-layout.component.ts`:
+
 ```typescript
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -458,11 +491,13 @@ export class MainLayoutComponent {}
 ```
 
 Replace `src/app/app.html` with:
+
 ```html
 <router-outlet />
 ```
 
 Update `src/app/app.ts`:
+
 ```typescript
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
@@ -479,6 +514,7 @@ export class AppComponent {
 ```
 
 Update `src/app/app.spec.ts`:
+
 ```typescript
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app';
@@ -521,6 +557,7 @@ git commit -m "feat(layout): add MainLayoutComponent and clean app root template
 ### Task 6: Dashboard Feature & Routing Configuration
 
 **Files:**
+
 - Create: `src/app/features/dashboard/dashboard.component.ts`
 - Create: `src/app/features/dashboard/dashboard.component.html`
 - Create: `src/app/features/dashboard/dashboard.component.spec.ts`
@@ -528,12 +565,14 @@ git commit -m "feat(layout): add MainLayoutComponent and clean app root template
 - Modify: `src/app/app.routes.ts`
 
 **Interfaces:**
+
 - Consumes: `@shared/components/button/button.component`, `@layouts/main-layout/main-layout.component`
 - Produces: Lazy-loaded Dashboard route registered under `MainLayoutComponent` at `/dashboard`, with default redirect from `/` to `/dashboard`.
 
 - [ ] **Step 1: Write the failing unit test for `DashboardComponent`**
 
 Create `src/app/features/dashboard/dashboard.component.spec.ts`:
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DashboardComponent } from './dashboard.component';
@@ -572,41 +611,49 @@ Expected: FAIL.
 - [ ] **Step 3: Implement `DashboardComponent` and routing**
 
 Create `src/app/features/dashboard/dashboard.component.html`:
+
 ```html
 <div class="space-y-6">
   <div>
-    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">System Overview</h1>
-    <p class="text-sm text-slate-500 mt-1">Welcome to OrgSecretary. Your modern Angular 21 & Tailwind CSS v4 workspace is ready.</p>
+    <h1 class="text-2xl font-bold tracking-tight text-slate-900">System Overview</h1>
+    <p class="mt-1 text-sm text-slate-500">
+      Welcome to OrgSecretary. Your modern Angular 21 & Tailwind CSS v4 workspace is ready.
+    </p>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-      <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Architecture</div>
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Architecture</div>
       <div class="mt-2 text-xl font-bold text-slate-800">Domain-Sliced</div>
-      <p class="text-xs text-slate-500 mt-1">Core, Shared, Layouts & Features</p>
+      <p class="mt-1 text-xs text-slate-500">Core, Shared, Layouts & Features</p>
     </div>
 
-    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-      <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Styling Engine</div>
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+        Styling Engine
+      </div>
       <div class="mt-2 text-xl font-bold text-indigo-600">Tailwind CSS v4</div>
-      <p class="text-xs text-slate-500 mt-1">Zero-config CSS-first compilation</p>
+      <p class="mt-1 text-xs text-slate-500">Zero-config CSS-first compilation</p>
     </div>
 
-    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-      <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Reactivity Proof</div>
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+        Reactivity Proof
+      </div>
       <div class="mt-2 flex items-center justify-between">
         <span class="text-2xl font-bold text-slate-800">{{ counter() }}</span>
         <app-button variant="primary" size="sm" (click)="increment()">
           Increment Signal
         </app-button>
       </div>
-      <p class="text-xs text-slate-500 mt-2">Angular Signals reactive state</p>
+      <p class="mt-2 text-xs text-slate-500">Angular Signals reactive state</p>
     </div>
   </div>
 </div>
 ```
 
 Create `src/app/features/dashboard/dashboard.component.ts`:
+
 ```typescript
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -621,25 +668,26 @@ export class DashboardComponent {
   counter = signal<number>(0);
 
   increment(): void {
-    this.counter.update(c => c + 1);
+    this.counter.update((c) => c + 1);
   }
 }
 ```
 
 Create `src/app/features/dashboard/dashboard.routes.ts`:
+
 ```typescript
 import { Routes } from '@angular/router';
 
 export const DASHBOARD_ROUTES: Routes = [
   {
     path: '',
-    loadComponent: () =>
-      import('./dashboard.component').then(m => m.DashboardComponent),
+    loadComponent: () => import('./dashboard.component').then((m) => m.DashboardComponent),
   },
 ];
 ```
 
 Update `src/app/app.routes.ts`:
+
 ```typescript
 import { Routes } from '@angular/router';
 
@@ -647,9 +695,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('@layouts/main-layout/main-layout.component').then(
-        m => m.MainLayoutComponent,
-      ),
+      import('@layouts/main-layout/main-layout.component').then((m) => m.MainLayoutComponent),
     children: [
       {
         path: '',
@@ -659,9 +705,7 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadChildren: () =>
-          import('@features/dashboard/dashboard.routes').then(
-            m => m.DASHBOARD_ROUTES,
-          ),
+          import('@features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
       },
     ],
   },
@@ -689,9 +733,11 @@ git commit -m "feat(features): add lazy-loaded dashboard feature with signals co
 ### Task 7: Full Verification & Formatting
 
 **Files:**
+
 - Repository-wide
 
 **Interfaces:**
+
 - Consumes: All implemented components, styling, configs
 - Produces: Complete clean production build, 100% passing tests, formatted code.
 

@@ -4,9 +4,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('@layouts/main-layout/main-layout.component').then(
-        m => m.MainLayoutComponent,
-      ),
+      import('@layouts/main-layout/main-layout.component').then((m) => m.MainLayoutComponent),
     children: [
       {
         path: '',
@@ -16,9 +14,7 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadChildren: () =>
-          import('@features/dashboard/dashboard.routes').then(
-            m => m.DASHBOARD_ROUTES,
-          ),
+          import('@features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
       },
     ],
   },

@@ -32,7 +32,8 @@ export class ButtonComponent {
     const variantMap: Record<ButtonVariant, string> = {
       primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
       secondary: 'bg-slate-800 text-white hover:bg-slate-900 focus:ring-slate-700',
-      outline: 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-indigo-500',
+      outline:
+        'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-indigo-500',
     };
 
     return `${base} ${sizeMap[this.size()]} ${variantMap[this.variant()]}`;

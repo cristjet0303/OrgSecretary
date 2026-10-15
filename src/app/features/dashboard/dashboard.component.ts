@@ -11,6 +11,6 @@ export class DashboardComponent {
   counter = signal<number>(0);
 
   increment(): void {
-    this.counter.update(c => c + 1);
+    this.counter.update((c) => c + 1);
   }
 }

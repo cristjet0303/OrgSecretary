@@ -1,15 +1,21 @@
-<div class="min-h-screen bg-slate-50 flex flex-col">
+<div class="flex min-h-screen flex-col bg-slate-50">
   <!-- Top Navigation Bar -->
-  <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30">
+  <header
+    class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6"
+  >
     <div class="flex items-center space-x-3">
-      <div class="h-9 w-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+      <div
+        class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-lg font-bold text-white shadow-sm"
+      >
         O
       </div>
-      <span class="font-bold text-xl text-slate-800 tracking-tight">OrgSecretary</span>
+      <span class="text-xl font-bold tracking-tight text-slate-800">OrgSecretary</span>
     </div>
 
     <div class="flex items-center space-x-4">
-      <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+      <span
+        class="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700"
+      >
         Angular 21 • Tailwind v4
       </span>
     </div>
@@ -17,17 +23,21 @@
 
   <div class="flex flex-1">
     <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-slate-200 p-4 hidden md:block">
+    <aside class="hidden w-64 border-r border-slate-200 bg-white p-4 md:block">
       <nav class="space-y-1">
-        <a routerLink="/dashboard" routerLinkActive="bg-indigo-50 text-indigo-700 font-semibold" class="flex items-center px-3 py-2 text-sm rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="bg-indigo-50 text-indigo-700 font-semibold"
+          class="flex items-center rounded-lg px-3 py-2 text-sm text-slate-600 transition-colors hover:bg-slate-100"
+        >
           <span class="mr-3">📊</span> Dashboard
         </a>
       </nav>
     </aside>
 
     <!-- Main Content Area -->
-    <main class="flex-1 p-6 md:p-8 overflow-y-auto">
-      <div class="max-w-7xl mx-auto">
+    <main class="flex-1 overflow-y-auto p-6 md:p-8">
+      <div class="mx-auto max-w-7xl">
         <router-outlet />
       </div>
     </main>
