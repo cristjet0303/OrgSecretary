@@ -9,7 +9,7 @@
     "test": "ng test",
     "format": "prettier --write .",
     "electron": "electron ./dist-desktop/main.js",
-    "build:desktop": "tsc -p tsconfig.desktop.json"
+    "build:desktop": "tsc -p tsconfig.desktop.json && node -e \"require('fs').copyFileSync('desktop/database/schema.sql', 'dist-desktop/database/schema.sql')\""
   },
   "private": true,
   "packageManager": "npm@10.9.2",
