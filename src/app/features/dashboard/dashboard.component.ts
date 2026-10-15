@@ -28,7 +28,11 @@ export class DashboardComponent implements OnInit {
   approvedCount = computed(
     () => this.meetingService.meetings().filter((m) => m.status === 'Approved').length,
   );
-  recentMeetings = computed(() => this.meetingService.meetings().slice(0, 5));
+  recentMeetings = computed(() =>
+    [...this.meetingService.meetings()]
+      .sort((a, b) => b.meetingDate.localeCompare(a.meetingDate))
+      .slice(0, 5),
+  );
 
   async ngOnInit(): Promise<void> {
     await Promise.all([this.orgService.loadOrganization(), this.meetingService.loadMeetings()]);

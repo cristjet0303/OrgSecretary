@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import { getDatabase } from '../connection';
 
 export class MeetingRepository {
@@ -62,7 +63,7 @@ export class MeetingRepository {
 
   static create(m: any) {
     const db = getDatabase();
-    const id = 'meeting-' + Date.now();
+    const id = crypto.randomUUID();
     const now = new Date().toISOString();
 
     db.prepare(
@@ -102,7 +103,7 @@ export class MeetingRepository {
     db.prepare(
       `
       UPDATE meetings
-      SET title = ?, meeting_type = ?, meeting_number = ?, meeting_date = ?, start_time = ?, end_time = ?, venue = ?, chairperson = ?, secretary = ?, purpose = ?, status = ?, updated_at = ?
+      SET title = ?, meeting_type = ?, meeting_number = ?, meeting_date = ?, start_time = ?, end_time = ?, venue = ?, chairperson = ?, secretary = ?, purpose = ?, status = ?, related_meeting_id = ?, updated_at = ?
       WHERE id = ?
     `,
     ).run(
@@ -117,6 +118,7 @@ export class MeetingRepository {
       updated.secretary || null,
       updated.purpose || null,
       updated.status,
+      updated.relatedMeetingId || null,
       now,
       id,
     );

@@ -11,8 +11,11 @@ export class MeetingService {
   isLoading = signal<boolean>(false);
 
   upcomingMeetings = computed(() => {
+    const today = new Date().toISOString().substring(0, 10);
     return this.meetings()
-      .filter((m) => m.status === 'Planned' || m.status === 'In Preparation')
+      .filter(
+        (m) => (m.status === 'Planned' || m.status === 'In Preparation') && m.meetingDate >= today,
+      )
       .sort((a, b) => a.meetingDate.localeCompare(b.meetingDate));
   });
 

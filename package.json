@@ -1,6 +1,7 @@
 {
   "name": "org-secretary",
   "version": "0.0.0",
+  "main": "dist-desktop/main.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

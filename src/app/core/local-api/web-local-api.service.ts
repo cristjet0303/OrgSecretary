@@ -19,14 +19,24 @@ export class WebLocalApi implements LocalApi {
   ): Promise<Organization> {
     const existing = await this.getOrganization();
     const now = new Date().toISOString();
+    const id =
+      org.id ||
+      existing?.id ||
+      (typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : 'org-' + Date.now());
+    const logoPath = org.logoPath !== undefined ? org.logoPath : existing?.logoPath || undefined;
+    const headerLines =
+      org.headerLines !== undefined ? org.headerLines : existing?.headerLines || [];
+
     const saved: Organization = {
-      id: org.id || existing?.id || 'org-' + Date.now(),
+      id,
       name: org.name,
       acronym: org.acronym,
       address: org.address,
       contactDetails: org.contactDetails,
-      logoPath: org.logoPath,
-      headerLines: org.headerLines || [],
+      logoPath,
+      headerLines,
       createdAt: existing?.createdAt || now,
       updatedAt: now,
     };
@@ -48,6 +58,7 @@ export class WebLocalApi implements LocalApi {
           (m.chairperson && m.chairperson.toLowerCase().includes(q)),
       );
     }
+    list.sort((a, b) => a.meetingDate.localeCompare(b.meetingDate));
     return list;
   }
 
@@ -61,7 +72,10 @@ export class WebLocalApi implements LocalApi {
     const now = new Date().toISOString();
     const created: Meeting = {
       ...meeting,
-      id: 'meeting-' + Date.now(),
+      id:
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : 'meeting-' + Date.now(),
       createdAt: now,
       updatedAt: now,
     };

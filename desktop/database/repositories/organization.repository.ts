@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import { getDatabase } from '../connection';
 
 export class OrganizationRepository {
@@ -22,7 +23,10 @@ export class OrganizationRepository {
     const db = getDatabase();
     const existing = this.get();
     const now = new Date().toISOString();
-    const id = org.id || existing?.id || 'org-' + Date.now();
+    const id = org.id || existing?.id || crypto.randomUUID();
+    const logoPath = org.logoPath !== undefined ? org.logoPath : existing?.logoPath || null;
+    const headerLines =
+      org.headerLines !== undefined ? org.headerLines : existing?.headerLines || [];
 
     if (existing) {
       db.prepare(
@@ -36,8 +40,8 @@ export class OrganizationRepository {
         org.acronym || null,
         org.address || null,
         org.contactDetails || null,
-        org.logoPath || null,
-        JSON.stringify(org.headerLines || []),
+        logoPath,
+        JSON.stringify(headerLines),
         now,
         id,
       );
@@ -53,8 +57,8 @@ export class OrganizationRepository {
         org.acronym || null,
         org.address || null,
         org.contactDetails || null,
-        org.logoPath || null,
-        JSON.stringify(org.headerLines || []),
+        logoPath,
+        JSON.stringify(headerLines),
         now,
         now,
       );
