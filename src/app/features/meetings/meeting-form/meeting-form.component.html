@@ -1,0 +1,159 @@
+<div class="max-w-3xl space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-slate-900">
+      {{ isEditMode() ? 'Edit Meeting' : 'Schedule New Meeting' }}
+    </h1>
+    <p class="mt-1 text-sm text-slate-500">
+      Provide meeting details to initialize the preparation and event workspace.
+    </p>
+  </div>
+
+  <app-card title="Meeting Information">
+    <form (submit)="onSave(); $event.preventDefault()" class="space-y-4">
+      <div>
+        <label
+          class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+        >
+          Meeting Title *
+        </label>
+        <input
+          type="text"
+          [value]="title()"
+          (input)="title.set($any($event.target).value)"
+          placeholder="e.g. Regular Monthly Board Session"
+          required
+          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none"
+        />
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+          <label
+            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+          >
+            Meeting Type
+          </label>
+          <select
+            [value]="meetingType()"
+            (change)="meetingType.set($any($event.target).value)"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none"
+          >
+            <option value="Regular">Regular</option>
+            <option value="Special">Special</option>
+            <option value="Committee">Committee</option>
+            <option value="Board">Board</option>
+            <option value="General Assembly">General Assembly</option>
+          </select>
+        </div>
+
+        <div>
+          <label
+            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+          >
+            Date *
+          </label>
+          <input
+            type="date"
+            [value]="meetingDate()"
+            (input)="meetingDate.set($any($event.target).value)"
+            required
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+          <label
+            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+          >
+            Start Time
+          </label>
+          <input
+            type="time"
+            [value]="startTime()"
+            (input)="startTime.set($any($event.target).value)"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label
+            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+          >
+            Venue / Room
+          </label>
+          <input
+            type="text"
+            [value]="venue()"
+            (input)="venue.set($any($event.target).value)"
+            placeholder="e.g. Conference Room A"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+          <label
+            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+          >
+            Presiding Officer / Chairperson
+          </label>
+          <input
+            type="text"
+            [value]="chairperson()"
+            (input)="chairperson.set($any($event.target).value)"
+            placeholder="e.g. Hon. Maria Santos"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label
+            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+          >
+            Secretary
+          </label>
+          <input
+            type="text"
+            [value]="secretary()"
+            (input)="secretary.set($any($event.target).value)"
+            placeholder="e.g. John Doe"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label
+          class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+        >
+          Meeting Purpose / Notes
+        </label>
+        <textarea
+          [value]="purpose()"
+          (input)="purpose.set($any($event.target).value)"
+          rows="3"
+          placeholder="Summary of agenda goals or purpose of session"
+          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none"
+        ></textarea>
+      </div>
+
+      <div
+        class="flex items-center justify-between border-t border-slate-100 pt-4"
+      >
+        <a routerLink="/meetings">
+          <app-button variant="outline" type="button">Cancel</app-button>
+        </a>
+        <app-button
+          type="submit"
+          variant="primary"
+          [disabled]="!title().trim() || !meetingDate()"
+        >
+          {{ isEditMode() ? 'Save Changes' : 'Create Meeting' }}
+        </app-button>
+      </div>
+    </form>
+  </app-card>
+</div>

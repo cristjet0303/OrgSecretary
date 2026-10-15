@@ -1,0 +1,111 @@
+<div class="space-y-6">
+  <div
+    class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+  >
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">
+        Meetings & Events
+      </h1>
+      <p class="mt-1 text-sm text-slate-500">
+        Prepare, run, and document organization sessions.
+      </p>
+    </div>
+    <a routerLink="/meetings/new">
+      <app-button variant="primary"> + Schedule Meeting </app-button>
+    </a>
+  </div>
+
+  <!-- Filters & Search -->
+  <div
+    class="flex flex-col items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row"
+  >
+    <div class="flex w-full items-center space-x-2 overflow-x-auto sm:w-auto">
+      @for (st of statusFilters; track st) {
+        <button
+          (click)="filterStatus.set(st)"
+          [class]="
+            filterStatus() === st
+              ? 'bg-indigo-600 text-white'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          "
+          class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors"
+        >
+          {{ st }}
+        </button>
+      }
+    </div>
+    <div class="w-full sm:w-64">
+      <input
+        type="text"
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+        placeholder="Search title, chair..."
+        class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-indigo-500 focus:outline-none"
+      />
+    </div>
+  </div>
+
+  <!-- Meetings List -->
+  @if (filteredMeetings().length === 0) {
+    <div
+      class="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center"
+    >
+      <p class="text-sm font-semibold text-slate-700">No meetings found</p>
+      <p class="mt-1 text-xs text-slate-500">
+        Get started by creating your first meeting session.
+      </p>
+      <div class="mt-4">
+        <a routerLink="/meetings/new">
+          <app-button variant="primary" size="sm">+ New Meeting</app-button>
+        </a>
+      </div>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      @for (m of filteredMeetings(); track m.id) {
+        <div
+          class="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-slate-300"
+        >
+          <div>
+            <div class="mb-3 flex items-center justify-between">
+              <span
+                class="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600"
+              >
+                {{ m.meetingType }}
+              </span>
+              <app-badge [status]="m.status" />
+            </div>
+            <h3 class="line-clamp-1 text-lg font-bold text-slate-800">
+              {{ m.title }}
+            </h3>
+            <p class="mt-1 flex items-center text-xs text-slate-500">
+              📅 {{ m.meetingDate }} @if (m.startTime) { • {{ m.startTime }} }
+            </p>
+            @if (m.venue) {
+              <p class="mt-1 flex items-center text-xs text-slate-500">
+                📍 {{ m.venue }}
+              </p>
+            }
+          </div>
+
+          <div
+            class="mt-6 flex items-center justify-between border-t border-slate-100 pt-4"
+          >
+            <a
+              [routerLink]="['/meetings', m.id]"
+              class="text-xs font-bold text-indigo-600 hover:text-indigo-800"
+            >
+              Open Workspace →
+            </a>
+            <a
+              [routerLink]="['/meetings', m.id, 'edit']"
+              class="text-xs text-slate-400 hover:text-slate-600"
+            >
+              Edit
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

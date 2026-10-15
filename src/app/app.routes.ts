@@ -23,6 +23,13 @@ export const routes: Routes = [
             (m) => m.ORGANIZATION_ROUTES,
           ),
       },
+      {
+        path: 'meetings',
+        loadChildren: () =>
+          import('@features/meetings/meetings.routes').then(
+            (m) => m.MEETINGS_ROUTES,
+          ),
+      },
     ],
   },
   {
