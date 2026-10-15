@@ -16,6 +16,13 @@ export const routes: Routes = [
         loadChildren: () =>
           import('@features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
       },
+      {
+        path: 'organization',
+        loadChildren: () =>
+          import('@features/organization/organization.routes').then(
+            (m) => m.ORGANIZATION_ROUTES,
+          ),
+      },
     ],
   },
   {

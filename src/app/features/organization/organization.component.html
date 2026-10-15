@@ -1,0 +1,98 @@
+<div class="max-w-4xl space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight text-slate-900">
+      Organization Profile
+    </h1>
+    <p class="mt-1 text-sm text-slate-500">
+      Configure your organization's identity, branding, and document letterhead headers.
+    </p>
+  </div>
+
+  @if (isSaved()) {
+    <div
+      class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-800"
+    >
+      ✓ Organization details successfully saved!
+    </div>
+  }
+
+  <app-card
+    title="General Information"
+    subtitle="Used across meeting notices, minutes, and attendance sheets"
+  >
+    <form (submit)="onSubmit(); $event.preventDefault()" class="space-y-4">
+      <div>
+        <label
+          class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+        >
+          Organization Name *
+        </label>
+        <input
+          type="text"
+          [value]="orgName()"
+          (input)="orgName.set($any($event.target).value)"
+          placeholder="e.g. Sangguniang Barangay Council"
+          required
+          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+          <label
+            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+          >
+            Acronym / Short Name
+          </label>
+          <input
+            type="text"
+            [value]="orgAcronym()"
+            (input)="orgAcronym.set($any($event.target).value)"
+            placeholder="e.g. SBC"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+        </div>
+
+        <div>
+          <label
+            class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+          >
+            Contact Details
+          </label>
+          <input
+            type="text"
+            [value]="orgContact()"
+            (input)="orgContact.set($any($event.target).value)"
+            placeholder="e.g. secretary@barangay.gov.ph"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label
+          class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+        >
+          Office Address
+        </label>
+        <textarea
+          [value]="orgAddress()"
+          (input)="orgAddress.set($any($event.target).value)"
+          rows="2"
+          placeholder="e.g. Barangay Hall, Barangay Central, Quezon City"
+          class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        ></textarea>
+      </div>
+
+      <div class="flex justify-end pt-4">
+        <app-button
+          type="submit"
+          variant="primary"
+          [disabled]="!orgName().trim()"
+        >
+          Save Organization Profile
+        </app-button>
+      </div>
+    </form>
+  </app-card>
+</div>
